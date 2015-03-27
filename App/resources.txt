@@ -1,0 +1,3 @@
+https://github.com/tjfontaine/node-vlc
+https://github.com/rogerwang/node-webkit/wiki/Mini-browser-in-iframe
+https://github.com/mafintosh/torrent-stream

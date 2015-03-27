@@ -1,0 +1,13 @@
+# Cookies for domains related to lostfilm.tv.
+# This content may be pasted into a cookies.txt file and used by wget
+# Example:  wget -x --load-cookies cookies.txt http://www.lostfilm.tv/
+#
+.lostfilm.tv	TRUE	/	FALSE	0	phpbb2mysql_t	a%3A2%3A%7Bi%3A18934%3Bi%3A1386214434%3Bi%3A17403%3Bi%3A1386214463%3B%7D
+.lostfilm.tv	TRUE	/	FALSE	0	lnk_uid	bed8336c0aeafdcd1442c6b60dd79ad6
+.lostfilm.tv	TRUE	/	FALSE	0	__cfduid	d4ec1301c40a5ea8e267dbdfceef60ce01397951886746
+.lostfilm.tv	TRUE	/	FALSE	0	dlt_2	10d82fc003e3f6f0829720a1b0696ec0
+.lostfilm.tv	TRUE	/	FALSE	0	uid	577570
+.lostfilm.tv	TRUE	/	FALSE	0	pass	f0c9f19a70c98b5bf5c3620725c3fbfb
+.lostfilm.tv	TRUE	/	FALSE	0	phpbb2mysql_data	a%3A2%3A%7Bs%3A11%3A%22autologinid%22%3Bs%3A32%3A%22fb103359f55ebcfd77748c3addf8e682%22%3Bs%3A6%3A%22userid%22%3Bs%3A6%3A%22576182%22%3B%7D
+.lostfilm.tv	TRUE	/	FALSE	0	phpbb2mysql_sid	94144fe18145b0a8f458e39906a6e6c4
+.lostfilm.tv	TRUE	/	FALSE	0	b_u_stat	a%3A1%3A%7Bi%3A785%3Ba%3A5%3A%7Bs%3A1%3A%22b%22%3Ba%3A1%3A%7Bi%3A1136%3Ba%3A1%3A%7Bs%3A1%3A%22c%22%3Bi%3A3%3B%7D%7Ds%3A1%3A%22d%22%3Bs%3A10%3A%222014061718%22%3Bs%3A1%3A%22c%22%3Bi%3A3%3Bs%3A1%3A%22s%22%3Bi%3A1%3Bs%3A1%3A%22u%22%3Bs%3A8%3A%2220140622%22%3B%7D%7D

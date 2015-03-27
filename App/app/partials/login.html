@@ -1,0 +1,15 @@
+<ul class="nav nav-pills nav2">
+  <li role="presentation">
+    <label ng-click="goHome()">Back to Main</label>
+  </li>
+  <li role="presentation">
+    <label class="has-spinner active" data-toggle="tooltip" data-placement="bottom" title="Just log in below">
+      <i class="fa fa-refresh fa-spin"></i> Waiting for login
+    </label>
+    <label class="btn btn-sm btn-danger glossy" ng-click="getCookie()">Confirm Login</label>
+  </li>
+</ul>
+
+<div class="list-container login-controller">
+  <iframe id="loginFrame" src="http://lostfilm.tv" width="100%" height="100%" nwdisable nwfaketop></iframe>
+</div>

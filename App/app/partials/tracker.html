@@ -1,0 +1,26 @@
+<ul class="nav nav-pills nav2 nav3" ng-show="changed">
+  <li role="presentation"><a href="#/updates" ng-click="saveSettings();">Save</a></li>
+  <li role="presentation"><a href="#/tracker" ng-click="cancelChanges()">Cancel</a></li>
+</ul>
+
+<div ng-class="['list-container', changed ? 'padding-top-40' : '']"
+     ng-style="{ paddingBottom: previewActive ? '40%' : '15px' }">
+  <!--<button class="btn btn-primary" ng-click="saveSettings()">Save</button>-->
+  <!--<button ng-click="resetSettings()">Reset</button>-->
+  <!-- Series list -->
+  <button class="previewClose btn btn-primary glossy" ng-show="previewActive" ng-click="preview(previewId)">
+    <span class="glyphicon glyphicon-chevron-down"></span> <span>Close</span>
+  </button>
+  <iframe src="about:blank" class="previewFrame" id="previewFrame"
+          nwdisable nwfaketop
+           />
+  <div ng-repeat="movie in series | keyedOrderBy : 'title' : true">
+    <input type="checkbox" ng-model="movie.status" id="track{{movie.id}}" ng-click="setChanged()" />
+    <label for="track{{movie.id}}" ng-bind="movie.title" class="pointer unselectable"></label>
+    <button ng-click="preview(movie.id)"
+            ng-class="['btn', 'btn-xs', (previewActive && previewId == movie.id) ? 'btn-danger' : 'btn-default']">
+      <span ng-class="['glyphicon', (previewActive && previewId == movie.id) ? 'glyphicon-eye-close' : 'glyphicon-eye-open']"></span>
+      <span>{{(previewActive && previewId == movie.id) ? 'Close preview' : 'Preview'}}</span>
+    </button>
+  </div>
+</div>

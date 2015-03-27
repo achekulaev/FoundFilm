@@ -1,0 +1,234 @@
+body {
+  padding-top: 40px;
+}
+
+#loadingOverlay {
+  position: fixed; 
+  top: 40px; 
+  left: 0px;
+  width: 100vw;
+  height: 100vh; 
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  font-family: sans-serif;
+  font-size: 48pt;
+  font-weight: bold;
+  text-align: center;
+  line-height: 100vh;
+}
+
+.previewFrame {
+  position: fixed;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  width: 100%;
+  border: 0;
+  border-top: 3px solid #333;
+  height: 0;
+  background: #fff;
+}
+
+.previewClose {
+  position: fixed;
+  bottom: 50%;
+  right: 50%;
+  margin-bottom: -5px;
+  background: #333;
+  border: 0;
+}
+
+.previewClose:hover {
+  background-color: #c90000;
+}
+
+.episode {
+  line-height: 30px;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.unselectable, button, .btn {
+  -webkit-user-select: none;
+}
+
+.unseen {
+  color: #000;
+}
+
+.seen {
+  color: silver;
+}
+.seen .episode-title {
+  font-style: italic;
+}
+
+.nav-main {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+  border-radius: 0;
+}
+
+.nav {
+  background: #333;
+  -webkit-user-select: none
+}
+
+.nav > li:first-child {
+  padding-left: 10px;
+}
+
+.nav > li {
+  margin-top: 1px;
+}
+
+.nav > li > a {
+  color: #fff;
+  font-weight: bold;
+}
+
+.nav > li > a:hover {
+  background-color: #c90000;
+}
+
+/* nav3 is secondary taskbar on updates page */
+.nav2 {
+  position: fixed;
+  top: 40px;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+  background: #666;
+}
+
+.nav2 > li {
+  color: #fff;
+  line-height: 35px;
+}
+.nav2 > li > label {
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: normal;
+}
+
+.nav2 > li[role=presentation] {
+  padding-left: 25px;
+}
+
+.nav2 > li > input[type=checkbox] {
+  display: none;
+}
+
+/* nav3 is secondary taskbar on trackers page */
+.nav3 {
+  position: fixed;
+  top: 40px;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+}
+
+.nav3 li {
+  line-height: inherit;
+}
+
+.nav3 > li:first-child {
+  padding-left: 10px;
+}
+
+
+.list-container {
+  padding: 15px 15px;
+}
+
+.list-container.padding-top-40 {
+  padding-top: 45px;
+}
+
+.movie-header {
+  padding: 0 15px;
+}
+
+.displayNone {
+  display: none;
+}
+
+label.collapser {
+  display: none;
+  width: 22px;
+  font-size: 17px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+label.collapser.displayOverride {
+  display: inline-block;
+}
+
+.movie-header:hover label.collapser {
+  display: inline-block;
+}
+
+.movie-header .unseenCount {
+  width: 22px;
+  font-size: 14px;
+}
+
+.movie-header .unseenCount.twoDigit {
+  padding: 3px 0;
+}
+
+.movie-header:hover .unseenCount {
+  display: none;
+}
+
+.movie-header .btn {
+  margin-top: -4px;
+}
+
+.panel-body .btn {
+  margin-top: -2px;
+}
+
+.glossy {
+  -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12) 51%, rgba(0, 0, 0, 0.04));
+}
+
+.login-controller {
+  height: 100vh;
+  padding: 40px 0 0 0;
+}
+
+.login-controller iframe {
+  border: 0;
+}
+
+.log {
+  display: none;
+  position: fixed;
+  top: 40px;
+  left: 0;
+  z-index: 10;
+  width: 100vw;
+  height: 500px;
+  background: #fff;
+  color: #000;
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 14px;
+  border-bottom: 1px solid black;
+}
+
+.log #log {
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 14px;
+  width: 100%;
+  height: 100%;
+}

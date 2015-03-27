@@ -1,0 +1,10 @@
+http://stackoverflow.com/questions/21120091/streaming-converted-movie-with-mp4-container-in-nodejs-movie-playing-very-fast
+https://www.npmjs.org/package/stream-transcoder
+
+http://stackoverflow.com/questions/13696148/node-js-create-folder-or-use-existing
+
+http://blog.nodejitsu.com/6-must-have-nodejs-modules/
+
+http://stackoverflow.com/questions/18141499/mikeals-nodejs-request-modify-body-before-piping
+
+- find popcorn fork. find out what video player they used
