@@ -26,6 +26,7 @@ ffControllers.factory('$settings', [ function() {
     angular.forEach($instance.data.series, function(movie) {
       if (movie.episodes) {
         angular.forEach(movie.episodes, function(episode) {
+          // reset in-progress statuses
           episode.ariaRunning = 0;
           episode.gettingTorrentFile = 0;
         })
@@ -164,6 +165,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
   $scope.series = $settings.data.series;
   $scope.config = $settings.config;
   $scope.childProcesses = {}; //just here to avoid IDE warning. childProcesses defined in node-init.js
+  $scope.totalFileSize = 0;
 
   /**
    * Checks if file exists and readable. Returns 1 or 0
@@ -249,14 +251,6 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
   $scope.getUpdates = function(forced) {
     var refreshDelayMsec = (60 * 60) * 1000; //1 hour
     if (!forced && $settings.config.lastUpdate && ((Date.now() - $settings.config.lastUpdate) < refreshDelayMsec)) {
-      // if (!Object.keys(childProcesses).length) { //if no aria's is running
-      //   angular.forEach($scope.series, function(movie) {
-      //     angular.forEach(movie.episodes, function(e) {
-      //       //reset aria running status for all downloads as app was restarted
-      //       e.ariaRunning = 0;
-      //     });
-      //   });
-      // }
       $timeout(function() {
         jQuery('[data-toggle="tooltip"]').tooltip();
         $menu.hideLoading();
@@ -275,8 +269,12 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
       }
     });
 
+    $timeout(function() { //$timeout ensures that code will run after angular finishes it's UI job
+      $menu.hideLoading();
+    });
+
     $q.all(promises).then(function() {
-      if (!$scope.$$phase) { // http://stackoverflow.com/questions/12729122/prevent-error-digest-already-in-progress-when-calling-scope-apply
+      if (!$scope.$$phase) {
         $scope.$apply();
       }
       $settings.series = $scope.series;
@@ -382,16 +380,16 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
     var spawn = require('child_process').spawn,
         home = $agent.getUserHome();
 
-    // childProcesses defined in node-init.js
+    // childProcesses var is defined in node-init.js
     childProcesses[movieIndex + episodeIndex] = spawn('./bin/aria2c', [
       '--enable-color=false',
       '--summary-interval=1',
       '--allow-overwrite=true',
       '--index-out=1=' + episode.id + '.avi',
-      '--dir=' + home + movie.id + '',
+      '--dir=' + home + movie.id,
       '--check-integrity=true',
       '--continue=true',
-      '--max-connection-per-server=4',
+      '--max-connection-per-server=5',
       '--seed-time=0',
       '--on-download-complete=exit',
       '' + home + movie.id + '/' + episode.id + '.torrent'
@@ -411,7 +409,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
       }
       //Download finished
       else if (out.match('SEED')) {
-        episode.downloadingDescription = 'Finishing download...';
+        $settings.data.series[movieIndex].episodes[episodeIndex].downloadingDescription = 'Finishing download...';
       }
       //Download in progress
       else {
@@ -438,6 +436,8 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
         ffLog('ERROR during torrent download of ' + episode.title);
       }
       delete childProcesses[movieIndex + episodeIndex];
+      $settings.data.series[movieIndex].episodes[episodeIndex].fileSize = fs.statSync(home + movie.id + '/' + episode.id + '.avi').size;
+      $scope.totalFileSize = $scope.updateFileSizes();
       $rootScope.$broadcast('scopeApply');
       $rootScope.$broadcast('settings');
       ffLog('Aria for ' + movieIndex + ':' + episodeIndex +' exited with code ' + code);
@@ -463,6 +463,65 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
       ffLog('ERROR playing movie. Can not open file ' + file);
     }
   };
+
+
+  /**
+   * Delete downloaded episode video file
+   * @param  {int} mIndex Movie index
+   * @param  {int} eIndex Episode index
+   * @return {null}
+   */
+  $scope.fileDelete = function(mIndex, eIndex) {
+    var movie = $scope.series[mIndex],
+      episode = movie.episodes[eIndex], 
+      path = $agent.getUserHome() + movie.id + '/' + episode.id + '.avi';
+
+    fs.unlink(path, function(err) {
+      if (err) {
+        alert("Can not delete \"" + path + "\". " + err);
+      }
+      $settings.data.series[mIndex].episodes[eIndex].gotMovie = 0;
+      $settings.data.series[mIndex].episodes[eIndex].fileSize = 0;
+      $rootScope.$broadcast('filesUpdate');
+      $rootScope.$broadcast('settings');
+    });
+  }
+
+  $scope.fileDeleteConfirm = function(mIndex, eIndex) {
+    if (confirm('Delete this file?')) {
+      $scope.fileDelete(mIndex, eIndex);
+    }
+  }
+
+  $scope.fileCleanup = function() {
+    angular.forEach($settings.data.series, function(movie, mIndex) {
+      if (movie.episodes) {
+        angular.forEach(movie.episodes, function(episode, eIndex) {
+          if (episode.gotMovie && episode.seen) {
+            $scope.fileDelete(mIndex, eIndex);
+          }
+        })
+      }
+    });
+  }
+
+  $scope.updateFileSizes = function() {
+    var home = $agent.getUserHome(), total = 0;
+
+    angular.forEach($settings.data.series, function(movie) {
+      if (movie.episodes) {
+        angular.forEach(movie.episodes, function(episode) {
+          if (episode.gotMovie) {
+            var size = fs.statSync(home + movie.id + '/' + episode.id + '.avi').size;
+            total += size;
+            episode.fileSize = size;
+          }
+        })
+      }
+    });
+
+    return total;
+  }
 
   /**
    * Sets seen/unseen status on movie and counts unseen episodes
@@ -497,7 +556,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
       e.seen = true;
     });
     movie.seen = true;
-    movie.showSeen = true;
+    movie.showSeen = true; // unhide seen episodes
     if (!$scope.$$phase) {
       $scope.$apply();
     }
@@ -524,6 +583,13 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
     $scope.saveSettings();
   });
 
+  $scope.$on('filesUpdate', function(e) {
+    $scope.totalFileSize = $scope.updateFileSizes();
+    $timeout(function() {
+      $scope.$apply();
+    });
+  });
+
   $scope.$on('scopeApply', function(e) {
     if (!$scope.$$phase) {
       $scope.$apply();
@@ -543,11 +609,12 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
   //--------------------- Runtime --------------------------//
 
   if (!Object.keys($scope.series).length) {
-    console.log('No series selected!');
+    console.log('No series to track!');
     $location.path('/tracker'); // redirect to tracker for user to select series
   } else {
     $timeout(function() {
       $scope.getUpdates();
+      $scope.totalFileSize = $scope.updateFileSizes();
     });
   }
 

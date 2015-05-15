@@ -214,16 +214,20 @@ label.collapser.displayOverride {
 .log {
   display: none;
   position: fixed;
-  top: 40px;
+  top: 80px;
   left: 0;
   z-index: 10;
   width: 100vw;
   height: 500px;
-  background: #fff;
-  color: #000;
-  font-family: Tahoma, Arial, sans-serif;
-  font-size: 14px;
   border-bottom: 1px solid black;
+}
+.log textarea {
+  border: 0;
+  padding-left: 5px;
+  font-family: Monaco;
+  font-size: 13px;
+  color: #c9c9c9;
+  background: #555555;
 }
 
 .log #log {

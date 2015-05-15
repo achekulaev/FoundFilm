@@ -6,23 +6,28 @@ JSTorrent = function(filename) {
   this.filename = filename;
   this.engine = null;
 
-  this.init = function() {
-    readTorrent(this.filename, function(err, torrent) {
-    	if (err) {
-    		console.error(err.message);
-    	}
+  jstorrent = this;
+  readTorrent(this.filename, function(err, torrent) {
+  	if (err) {
+  		console.error(err.message);
+  	}
 
-    	// console.log(torrent);
-      this.engine = torrentStream(torrent, {
-        path: '/Users/alexei.chekulaev/tmp/'
-      });
-      console.log(this.engine);
+  	console.log(torrent);
 
-      this.engine.on('ready', function() {
-        console.log(this.engine.files);
-      });
+    jstorrent.engine = torrentStream(torrent, {
+      path: '/Users/alexei.chekulaev/tmp/'
     });
-  };
+    console.log(jstorrent.engine);
+
+    jstorrent.engine.on('ready', function() {
+      console.log(jstorrent.engine.files[0]);
+      // jstorrent.engine.files[0].select(); //downloads first file
+    });
+
+    jstorrent.engine.on('download', function(pi) {
+      console.log(pi);
+    });
+  });
 
 
 

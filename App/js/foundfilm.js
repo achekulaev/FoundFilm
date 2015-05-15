@@ -12,7 +12,7 @@ var Agent = function() {
     },
     encoding:           'CP1251',
     qs: { //query string
-      'cat' :       '101'
+      // 'cat' :       '101'
     }
   };
 
