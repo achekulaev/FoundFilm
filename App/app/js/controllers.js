@@ -51,7 +51,6 @@ ffControllers.factory('$agent', function() {
 
 ffControllers.factory('$menu', function() {
   return { 
-    state: { loading: true },
     hideLoading: function() {
       jQuery('#loadingOverlay').hide();
     }
@@ -60,7 +59,6 @@ ffControllers.factory('$menu', function() {
 
 
 ffControllers.controller('ffMenu', ['$scope', '$menu', '$settings', function($scope, $menu, $settings) {
-  $scope.menuState = $menu.state;
   $scope.settingsData = $settings.data;
 }]);
 
@@ -161,7 +159,6 @@ function ($scope, $filter, $settings, $location, $agent, $menu) {
 ffControllers.controller('ffUpdates', ['$scope', '$settings', '$agent', '$q', '$location', '$timeout', '$rootScope', '$menu',
 function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) {
 
-  $scope.menuState = $menu.state;
   $scope.series = $settings.data.series;
   $scope.config = $settings.config;
   $scope.childProcesses = {}; //just here to avoid IDE warning. childProcesses defined in node-init.js
