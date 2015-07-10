@@ -45,6 +45,12 @@
         <a onmousedown="showOverlay(this)" href="#/login">Log In</a>
       </li>
       <li><a href="#" onclick="jQuery('.log').toggle(); return false;">Log</a></li>
+      <li style="float: right; line-height: 36px; padding-right: 15px;">
+        <button ng-click="appQuit()"
+          class="btn btn-danger btn-xs unselectable no-outline" style="border-radius: 15px">
+          <span class="glyphicon glyphicon-remove"></span>
+        </button>
+      </li>
     </ul>
     <div class="log"><textarea readonly="readonly" id="log"></textarea></div>
 

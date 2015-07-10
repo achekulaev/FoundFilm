@@ -60,6 +60,9 @@ ffControllers.factory('$menu', function() {
 
 ffControllers.controller('ffMenu', ['$scope', '$menu', '$settings', function($scope, $menu, $settings) {
   $scope.settingsData = $settings.data;
+  $scope.appQuit = function() {
+    gui.App.quit();
+  }
 }]);
 
 /**
@@ -378,7 +381,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
         home = $agent.getUserHome();
 
     // childProcesses var is defined in node-init.js
-    childProcesses[movieIndex + episodeIndex] = spawn('./bin/aria2c', [
+    childProcesses[movieIndex + episodeIndex] = spawn(process.cwd() + '/bin/aria2c', [
       '--enable-color=false',
       '--summary-interval=1',
       '--allow-overwrite=true',
