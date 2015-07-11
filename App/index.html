@@ -1,26 +1,33 @@
 <!DOCTYPE html>
 <html ng-app="foundFilm">
   <head>
-    <link type="text/css" rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
+    <!--<link type="text/css" rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />-->
     <link type="text/css" rel="stylesheet" href="lib/font-awesome-4.3.0/css/font-awesome.css" />
+    <link type="text/css" rel="stylesheet" href="bower_components/angular-material/angular-material.min.css" />
     <link type="text/css" rel="stylesheet" href="css/main.css" />
     <title>LostFilm favorite series tracker</title>
   </head>
   <body>
 
-  <!-- external libs -->
+  <!-- jQuery -->
   <script src="lib/jquery/jquery-1.11.0.min.js"></script>
-  <script src="node_modules/angular/angular.min.js"></script>
-  <script src="node_modules/angular-route/angular-route.min.js"></script>
+  <!-- angular-material -->
+  <script src="bower_components/angular/angular.min.js"></script>
+  <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+  <script src="bower_components/angular-aria/angular-aria.min.js"></script>
+  <script src="bower_components/angular-material/angular-material.min.js"></script>
+  <script src="bower_components/angular-route/angular-route.min.js"></script>
+  <!-- bootstrap -->
   <script src="lib/bootstrap/js/bootstrap.js"></script>
-
+  <!-- custom js -->
   <script src="js/StringPrototype.js"></script>
   <script src="js/node-init.js"></script>
   <script src="js/foundfilm.js"></script>
+  <!--script src="js/jstorrent.js"></script-->
+  <!-- angular app files -->
   <script src="app/js/app.js"></script>
   <script src="app/js/filters.js"></script>
   <script src="app/js/controllers.js"></script>
-  <!--script src="js/jstorrent.js"></script-->
 
   <script>
     function ffLog(msg) {
