@@ -11,8 +11,8 @@ var Agent = function() {
       'Content-Type':   'Content-Type:text/html'
     },
     encoding:           'CP1251',
-    qs: { //query string
-      // 'cat' :       '101'
+    qs: { // query string, ex.:
+          // 'cat' : '101'
     }
   };
 

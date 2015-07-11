@@ -56,6 +56,10 @@ body {
   -webkit-user-select: none;
 }
 
+.no-outline {
+  outline-style: none;
+}
+
 .unseen {
   color: #000;
 }
