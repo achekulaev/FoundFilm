@@ -1,5 +1,6 @@
 body {
   padding-top: 40px;
+  background: #f5f5f5;
 }
 
 #loadingOverlay {
@@ -45,7 +46,7 @@ body {
 }
 
 .episode {
-  line-height: 30px;
+  line-height: 22px;
 }
 
 .pointer {
@@ -153,15 +154,44 @@ body {
 }
 
 .list-container.padding-top-40 {
-  padding-top: 45px;
+  padding: 40px 0 0 0;
 }
 
-.movie-header {
+.panel.movie {
+  margin-bottom: 0px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid #ddd; /*dark bevel part*/
+}
+
+.movie .panel-heading, .movie-header {
   padding: 0 15px;
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid #fff; /*light bevel part*/
+}
+
+.movie .panel-body {
+  background: #f5f5f5;
+  padding: 0 15px 15px 25px;
+}
+
+.movie .body-container {
+  border-left: 1px dotted #555;
+  padding-left: 10px;
+}
+
+.movie .episodeTitle:hover {
+  text-decoration: line-through;
 }
 
 .displayNone {
   display: none;
+}
+
+.clickable {
+  cursor: pointer;
 }
 
 label.collapser {

@@ -8,15 +8,16 @@
   <li role="presentation">
     <label ng-click="getUpdates(true)">Refresh</label>
   </li>
+  <li class="navbar-right" style="margin-right: 15px">
+    Disk use: {{totalFileSize | fileSize}}
+    <button class="btn btn-sm" ng-click="fileCleanup()">Cleanup</button>
+  </li>
 </ul>
 <div class="list-container padding-top-40">
-<div style="position: fixed; top: 45px; right: 15px; color: white; z-index: 10000">
-  Disk use: {{totalFileSize | fileSize}}
-  <button class="btn btn-sm" ng-click="fileCleanup()">Cleanup</button>
-</div>
-  <div ng-repeat="(mIndex, movie) in series" class="panel panel-default"
-       ng-show="movie.status && (movie.showSeen || (!movie.seen || config.showSeen))">
-    <div class="panel-heading movie-header glossy unselectable">
+  <div ng-repeat="(mIndex, movie) in series" class="panel panel-default movie"
+       ng-if="movie.status && (movie.showSeen || (!movie.seen || config.showSeen))">
+    <!-- PANEL HEADER -->
+    <div class="panel-heading movie-header unselectable">
       <!-- Expand/collapse -->
       <input type="checkbox" ng-model="movie.collapsed" ng-click="$emit('settings')" class="displayNone" id="collapsed{{movie.id}}" />
       <label for="collapsed{{movie.id}}"
@@ -39,61 +40,63 @@
         <label for="collapsed{{movie.id}}" class="unselectable pointer"
                >{{movie.title}}</label>
       </h3>
-      <!-- Show/Hide unseen -->
-      <input type="checkbox" ng-model="movie.showSeen" ng-click="$emit('settings')" class="displayNone" id="showSeen{{movie.id}}" />
-      <label for="showSeen{{movie.id}}" class="btn btn-sm btn-default glossy"
-             ng-show="!config.showSeen">
-        <span ng-class="['glyphicon', movie.showSeen ? 'glyphicon-eye-close' : 'glyphicon-eye-open']"></span>
-        <span>{{movie.showSeen ? 'Hide seen' : 'Show seen'}}</span>
-      </label>
-      <!-- Mark all as seen -->
-      <button class="btn btn-sm btn-default glossy"
-             data-toggle="tooltip" data-placement="bottom" title="Marks all episodes as seen"
-             ng-show="movie.unseenCount > 0" ng-click="markMovieSeen(mIndex)">
-        <span class="glyphicon glyphicon-check"></span>
-        <span>Mark as seen</span>
-      </button>
-      <!--<span ng-show="movie.updatingStatus == 1" class="label label-primary"-->
-            <!--ng-bind="movie.updatingDescription">-->
-        <!--Loading...-->
-      <!--</span>-->
+      <!--&lt;!&ndash; Show/Hide unseen &ndash;&gt;-->
+      <!--<input type="checkbox" ng-model="movie.showSeen" ng-click="$emit('settings')" class="displayNone" id="showSeen{{movie.id}}" />-->
+      <!--<label for="showSeen{{movie.id}}" class="btn btn-sm btn-default glossy"-->
+             <!--ng-show="!config.showSeen">-->
+        <!--<span ng-class="['glyphicon', movie.showSeen ? 'glyphicon-eye-close' : 'glyphicon-eye-open']"></span>-->
+        <!--<span>{{movie.showSeen ? 'Hide seen' : 'Show seen'}}</span>-->
+      <!--</label>-->
+      <!--&lt;!&ndash; Mark all as seen &ndash;&gt;-->
+      <!--<button class="btn btn-sm btn-default glossy"-->
+             <!--data-toggle="tooltip" data-placement="bottom" title="Marks all episodes as seen"-->
+             <!--ng-show="movie.unseenCount > 0" ng-click="markMovieSeen(mIndex)">-->
+        <!--<span class="glyphicon glyphicon-check"></span>-->
+        <!--<span>Mark as seen</span>-->
+      <!--</button>-->
     </div>
 
-    <div class="panel-body" ng-show="!movie.collapsed">
-      <div ng-repeat="(eIndex, episode) in (movie.episodes | keyedOrderBy : 'id')"
-           ng-class="['episode', episode.seen ? 'seen' : 'unseen']"
-           ng-show="(!episode.seen || movie.showSeen || config.showSeen)">
-        <input type="checkbox" ng-model="episode.seen" ng-click="updateSeenStatus(mIndex); $emit('settings')" class="pointer"
-               data-toggle="tooltip" data-placement="right" title="Mark episode as seen">
+    <!-- PANEL BODY -->
+    <div class="panel-body" ng-if="!movie.collapsed">
+      <div class="body-container">
+        <!--- New Episodes --->
+        <div ng-repeat="(eIndex, episode) in (movie.episodes | keyedOrderBy : 'id')"
+               ng-class="['episode', episode.seen ? 'seen' : 'unseen']"
+               ng-if="(!episode.seen || movie.showSeen || config.showSeen)">
 
-        <span>{{episode.season + '.' + episode.number}}</span>
-        <!-- Episode title -->
-        <span ng-bind="episode.title" class="episode-title"></span>
-        <!-- Episode file size -->
-        <span ng-show="episode.fileSize" class="episode-title">[{{episode.fileSize | fileSize}}]</span>
-        <!-- Downloading state -->
-        <span ng-show="episode.ariaRunning || episode.gettingTorrentFile" class="label label-primary"
-              ng-bind="episode.downloadingDescription">
-          Status...
-        </span>
-        <button ng-show="episode.number != 99 && !episode.gotTorrentFile && !episode.gettingTorrentFile" class="btn btn-xs glossy {{episode.seen ? 'btn-default' : 'btn-primary'}}"
-                ng-click="getTorrent(mIndex, eIndex)">
-          <span class="glyphicon glyphicon-download"></span> <span>Download</span>
-        </button>
-        <button ng-show="episode.gotTorrentFile && !episode.gotMovie && !episode.ariaRunning" class="btn btn-xs glossy {{episode.seen ? 'btn-default' : 'btn-primary'}}"
-                ng-click="getMovie(mIndex, eIndex)">
-          <span class="glyphicon glyphicon-download"></span> <span>{{episode.ariaResumable ? 'Resume download' : 'Download movie'}}</span>
-        </button>
-        <button ng-show="episode.gotMovie == 1" class="btn btn-xs glossy {{episode.seen ? 'btn-default' : 'btn-success'}}"
-                ng-click="playMovie(mIndex, eIndex)">
-          <span class="glyphicon glyphicon-play-circle"></span> <span>Play</span>
-        </button>
-        <button ng-show="episode.gotMovie == 1" class="btn btn-xs glossy btn-warning"
-                ng-click="fileDeleteConfirm(mIndex, eIndex)">
-          <i class="fa fa-trash-o"></i> <span>Delete file</span>
-        </button>
-        <!--<button ng-click="episodeDelete(mIndex, eIndex)">Delete</button>-->
+          <!-- Episode title -->
+          <input type="checkbox" id="e{{movie.id}}{{eIndex}}"
+               ng-model="episode.seen" ng-click="updateSeenStatus(mIndex); $emit('settings')" class="displayNone">
+          <label for="e{{movie.id}}{{eIndex}}" class="clickable episodeTitle">
+            {{episode.season + '.' + episode.number}} {{episode.title}}
+          </label>
+          <!-- Episode file size -->
+          <span ng-show="episode.fileSize" class="episode-title">[{{episode.fileSize | fileSize}}]</span>
+          <!-- Downloading state -->
+          <span ng-show="episode.ariaRunning || episode.gettingTorrentFile" class="label label-primary"
+                ng-bind="episode.downloadingDescription">
+            Status...
+          </span>
+          <button ng-show="episode.number != 99 && !episode.gotTorrentFile && !episode.gettingTorrentFile" class="btn btn-xs glossy {{episode.seen ? 'btn-default' : 'btn-primary'}}"
+                  ng-click="getTorrent(mIndex, eIndex)">
+            <span class="glyphicon glyphicon-download"></span> <span>Download</span>
+          </button>
+          <button ng-show="episode.gotTorrentFile && !episode.gotMovie && !episode.ariaRunning" class="btn btn-xs glossy {{episode.seen ? 'btn-default' : 'btn-primary'}}"
+                  ng-click="getMovie(mIndex, eIndex)">
+            <span class="glyphicon glyphicon-download"></span> <span>{{episode.ariaResumable ? 'Resume download' : 'Download movie'}}</span>
+          </button>
+          <button ng-show="episode.gotMovie == 1" class="btn btn-xs glossy {{episode.seen ? 'btn-default' : 'btn-success'}}"
+                  ng-click="playMovie(mIndex, eIndex)">
+            <span class="glyphicon glyphicon-play-circle"></span> <span>Play</span>
+          </button>
+          <button ng-show="episode.gotMovie == 1" class="btn btn-xs glossy btn-warning"
+                  ng-click="fileDeleteConfirm(mIndex, eIndex)">
+            <i class="fa fa-trash-o"></i> <span>Delete file</span>
+          </button>
+          <!--<button ng-click="episodeDelete(mIndex, eIndex)">Delete</button>-->
+        </div>
       </div>
     </div>
   </div>
+  <div class="panel-heading movie-header unselectable"></div>
 </div>
