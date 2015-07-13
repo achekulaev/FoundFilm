@@ -49,18 +49,6 @@ body {
   line-height: 22px;
 }
 
-.pointer {
-  cursor: pointer;
-}
-
-.unselectable, button, .btn {
-  -webkit-user-select: none;
-}
-
-.no-outline {
-  outline-style: none;
-}
-
 .unseen {
   color: #000;
 }
@@ -182,8 +170,12 @@ body {
   padding-left: 10px;
 }
 
-.movie .episodeTitle:hover {
+.movie .unseen .episodeTitle:hover {
   text-decoration: line-through;
+  color: silver;
+}
+.movie .seen .episodeTitle:hover {
+  color: #000;
 }
 
 .displayNone {
@@ -236,6 +228,17 @@ label.collapser.displayOverride {
   background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12) 51%, rgba(0, 0, 0, 0.04));
 }
 
+.btn-outline-inverse {
+  background-color: transparent;
+  border-color: #ddd;
+  color: #fff;
+}
+.btn-outline-inverse:hover {
+  border-color: #ccc;
+  background-color: #ddd;
+  color: #666;
+}
+
 .login-controller {
   height: 100vh;
   padding: 40px 0 0 0;
@@ -270,3 +273,25 @@ label.collapser.displayOverride {
   width: 100%;
   height: 100%;
 }
+
+/* Generic */
+.inline {
+  display: inline;
+}
+
+.antialiased {
+  -webkit-font-smoothing: antialiased;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.unselectable, button, .btn {
+  -webkit-user-select: none;
+}
+
+.no-outline {
+  outline-style: none;
+}
+

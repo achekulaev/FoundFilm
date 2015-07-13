@@ -7,7 +7,7 @@ var Agent = function() {
     url:                'http://lostfilm.tv/browse.php',
     method:             'GET',
     headers: {
-      'User-Agent':     'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36',
+      'User-Agent':     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36',
       'Content-Type':   'Content-Type:text/html'
     },
     encoding:           'CP1251',
@@ -50,7 +50,7 @@ var Agent = function() {
         callback(parser.parseEpisodes(body));
       } else {
         var result = [{ error : '' }];
-        if (error) {
+        if (error != 'undefined') {
           console.log(error);
           result[0].error += 'Error contacting lostfilm.tv: ' + error.message;
         }

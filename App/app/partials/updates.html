@@ -1,16 +1,23 @@
 <ul class="nav nav-pills nav2">
-  <li role="presentation">
+  <li role="presentation" class="antialiased">
     <input type="checkbox" ng-model="config.showSeen" ng-click="$emit('settings')" id="showAll">
     <label for="showAll">
       {{config && config.showSeen ? 'Hide Seen' : 'Show Seen'}}
     </label>
   </li>
-  <li role="presentation">
-    <label ng-click="getUpdates(true)">Refresh</label>
+  <li role="presentation" class="antialiased">
+    <label ng-click="getUpdates(true)" ng-show="!fetchingUpdates">
+      Get Updates
+    </label>
+    <span ng-show="fetchingUpdates">
+      <i class="fa fa-refresh fa-spin"></i> Updating...
+    </span>
   </li>
   <li class="navbar-right" style="margin-right: 15px">
-    Disk use: {{totalFileSize | fileSize}}
-    <button class="btn btn-sm" ng-click="fileCleanup()">Cleanup</button>
+    <div class="inline antialiased">Disk use: {{totalFileSize | fileSize}}</div>
+    <button class="btn btn-sm btn-outline-inverse" ng-click="!cleanupRunning ? fileCleanup() : void(0)">
+      <i ng-if="cleanupRunning" class="fa fa-refresh fa-spin"></i> Cleanup
+    </button>
   </li>
 </ul>
 <div class="list-container padding-top-40">
@@ -35,10 +42,11 @@
       <span ng-bind="movie.unseenCount" ng-class="['badge', 'unseenCount', movie.unseenCount > 9 ? 'twoDigit' : '']"
             ng-show="movie.updatingStatus != 1 && movie.unseenCount > 0">
       </span>
-      <!-- Title -->
+      <!-- Movie Title -->
       <h3 class="btn- panel-title" style="display: inline-block; line-height: 35px">
-        <label for="collapsed{{movie.id}}" class="unselectable pointer"
-               >{{movie.title}}</label>
+        <label for="collapsed{{movie.id}}" class="unselectable pointer antialiased">
+          {{movie.title}}
+        </label>
       </h3>
       <!--&lt;!&ndash; Show/Hide unseen &ndash;&gt;-->
       <!--<input type="checkbox" ng-model="movie.showSeen" ng-click="$emit('settings')" class="displayNone" id="showSeen{{movie.id}}" />-->
@@ -64,7 +72,7 @@
                ng-class="['episode', episode.seen ? 'seen' : 'unseen']"
                ng-if="(!episode.seen || movie.showSeen || config.showSeen)">
 
-          <!-- Episode title -->
+          <!-- Episode Title -->
           <input type="checkbox" id="e{{movie.id}}{{eIndex}}"
                ng-model="episode.seen" ng-click="updateSeenStatus(mIndex); $emit('settings')" class="displayNone">
           <label for="e{{movie.id}}{{eIndex}}" class="clickable episodeTitle">
@@ -77,15 +85,15 @@
                 ng-bind="episode.downloadingDescription">
             Status...
           </span>
-          <button ng-show="episode.number != 99 && !episode.gotTorrentFile && !episode.gettingTorrentFile" class="btn btn-xs glossy {{episode.seen ? 'btn-default' : 'btn-primary'}}"
+          <button ng-show="episode.number != 99 && !episode.gotTorrentFile && !episode.gettingTorrentFile" class="btn btn-xs {{episode.seen ? 'btn-default' : 'btn-primary'}}"
                   ng-click="getTorrent(mIndex, eIndex)">
             <span class="glyphicon glyphicon-download"></span> <span>Download</span>
           </button>
-          <button ng-show="episode.gotTorrentFile && !episode.gotMovie && !episode.ariaRunning" class="btn btn-xs glossy {{episode.seen ? 'btn-default' : 'btn-primary'}}"
+          <button ng-show="episode.gotTorrentFile && !episode.gotMovie && !episode.ariaRunning" class="btn btn-xs {{episode.seen ? 'btn-default' : 'btn-primary'}}"
                   ng-click="getMovie(mIndex, eIndex)">
             <span class="glyphicon glyphicon-download"></span> <span>{{episode.ariaResumable ? 'Resume download' : 'Download movie'}}</span>
           </button>
-          <button ng-show="episode.gotMovie == 1" class="btn btn-xs glossy {{episode.seen ? 'btn-default' : 'btn-success'}}"
+          <button ng-show="episode.gotMovie == 1" class="btn btn-xs {{episode.seen ? 'btn-default' : 'btn-success'}}"
                   ng-click="playMovie(mIndex, eIndex)">
             <span class="glyphicon glyphicon-play-circle"></span> <span>Play</span>
           </button>

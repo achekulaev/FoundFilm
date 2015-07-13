@@ -166,6 +166,8 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
   $scope.config = $settings.config;
   $scope.childProcesses = {}; //just here to avoid IDE warning. childProcesses defined in node-init.js
   $scope.totalFileSize = 0;
+  $scope.fetchingUpdates = false;
+  $scope.cleanupRunning = false;
 
   /**
    * Checks if file exists and readable. Returns 1 or 0
@@ -260,6 +262,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
 
     // get updates for all trackers then update UI
     var promises = [];
+    $scope.fetchingUpdates = true;
 
     angular.forEach($scope.series, function(movie, key) {
       movie.updatingStatus = 1;
@@ -280,6 +283,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
       $settings.series = $scope.series;
       $settings.config.lastUpdate = Date.now();
       $scope.saveSettings();
+      $scope.fetchingUpdates = false; // stop spinners
       $timeout(function() { //$timeout ensures that code will run after angular finishes it's UI job
         jQuery('[data-toggle="tooltip"]').tooltip();
         $menu.hideLoading();
@@ -485,15 +489,16 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
       $rootScope.$broadcast('filesUpdate');
       $rootScope.$broadcast('settings');
     });
-  }
+  };
 
   $scope.fileDeleteConfirm = function(mIndex, eIndex) {
     if (confirm('Delete this file?')) {
       $scope.fileDelete(mIndex, eIndex);
     }
-  }
+  };
 
   $scope.fileCleanup = function() {
+    $scope.cleanupRunning = true;
     angular.forEach($settings.data.series, function(movie, mIndex) {
       if (movie.episodes) {
         angular.forEach(movie.episodes, function(episode, eIndex) {
@@ -503,7 +508,8 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
         })
       }
     });
-  }
+    $scope.cleanupRunning = false;
+  };
 
   $scope.updateFileSizes = function() {
     var home = $agent.getUserHome(), total = 0;
