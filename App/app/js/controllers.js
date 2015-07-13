@@ -499,16 +499,20 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
 
   $scope.fileCleanup = function() {
     $scope.cleanupRunning = true;
-    angular.forEach($settings.data.series, function(movie, mIndex) {
-      if (movie.episodes) {
-        angular.forEach(movie.episodes, function(episode, eIndex) {
-          if (episode.gotMovie && episode.seen) {
-            $scope.fileDelete(mIndex, eIndex);
-          }
-        })
-      }
+    $timeout(function() {
+      angular.forEach($settings.data.series, function (movie, mIndex) {
+        if (movie.episodes) {
+          angular.forEach(movie.episodes, function (episode, eIndex) {
+            if (episode.gotMovie && episode.seen) {
+              $scope.fileDelete(mIndex, eIndex);
+            }
+          })
+        }
+      });
+      $timeout(function() {
+        $scope.cleanupRunning = false;
+      });
     });
-    $scope.cleanupRunning = false;
   };
 
   $scope.updateFileSizes = function() {
@@ -527,7 +531,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
     });
 
     return total;
-  }
+  };
 
   /**
    * Sets seen/unseen status on movie and counts unseen episodes

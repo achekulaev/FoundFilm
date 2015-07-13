@@ -228,15 +228,14 @@ label.collapser.displayOverride {
   background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12) 51%, rgba(0, 0, 0, 0.04));
 }
 
-.btn-outline-inverse {
+.btn-outline-inverse, .btn-outline-inverse:focus {
   background-color: transparent;
   border-color: #ddd;
   color: #fff;
 }
 .btn-outline-inverse:hover {
-  border-color: #ccc;
-  background-color: #ddd;
-  color: #666;
+  color: #fff;
+  text-shadow: 0 0 3px white;
 }
 
 .login-controller {
@@ -264,12 +263,12 @@ label.collapser.displayOverride {
   font-family: Monaco;
   font-size: 13px;
   color: #c9c9c9;
-  background: #555555;
+  background: rgba(85, 85, 85, 0.95);
 }
 
 .log #log {
-  font-family: Tahoma, Arial, sans-serif;
-  font-size: 14px;
+  font-family: 'Lucida Grande';
+  font-size: 10px;
   width: 100%;
   height: 100%;
 }
