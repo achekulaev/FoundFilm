@@ -40,6 +40,11 @@ if (!isBrowser) {
       process.kill();
     });
   });
+
+  $(window).on('load', function() {
+    win.show();
+    win.focus();
+  });
 } else {
   //emulate some things to avoid errors
   require = function(module) {

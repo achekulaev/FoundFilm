@@ -6,14 +6,15 @@
   "window": {
     "title": "LostFilm Helper",
     "icon": "link.png",
-    "toolbar": true,
-    "frame": true,
+    "toolbar": false,
+    "frame": false,
     "width": 1024,
     "height": 768,
     "position": "mouse",
     "min_width": 400,
     "min_height": 200,
     "max_width": 1600,
-    "max_height": 1200
+    "max_height": 1200,
+    "show": false
   }
 }
