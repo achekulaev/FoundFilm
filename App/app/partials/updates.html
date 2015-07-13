@@ -73,11 +73,10 @@
                ng-if="(!episode.seen || movie.showSeen || config.showSeen)">
 
           <!-- Episode Title -->
-          <input type="checkbox" id="e{{movie.id}}{{eIndex}}"
-               ng-model="episode.seen" ng-click="updateSeenStatus(mIndex); $emit('settings')" class="displayNone">
-          <label for="e{{movie.id}}{{eIndex}}" class="clickable episodeTitle">
+          <span class="clickable episodeTitle unselectable"
+                 ng-click="episode.seen = !episode.seen; updateSeenStatus(mIndex); $emit('settings')" >
             {{episode.season + '.' + episode.number}} {{episode.title}}
-          </label>
+          </span>
           <!-- Episode file size -->
           <span ng-show="episode.fileSize" class="episode-title">[{{episode.fileSize | fileSize}}]</span>
           <!-- Downloading state -->
