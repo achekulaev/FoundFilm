@@ -57,3 +57,13 @@ if (!isBrowser) {
     }
   }
 }
+
+/**
+ * Check for empty value
+ * http://stackoverflow.com/questions/5515310/is-there-a-standard-function-to-check-for-null-undefined-or-blank-variables-in
+ * @param value
+ * @returns {boolean|*}
+ */
+function isEmpty(value){
+  return (typeof value === 'undefined' || value == null || value.length === 0 || jQuery.isEmptyObject(value));
+}

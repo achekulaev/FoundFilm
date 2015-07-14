@@ -66,6 +66,10 @@ body {
   background-color: rgb(201, 0, 0) !important;
 }
 
+.nav>li>a.btn-log {
+  background-color: transparent !important;
+}
+
 /* --- Updates controller --- */
 
 /* nav2 is secondary taskbar on updates page */
@@ -344,4 +348,112 @@ label.collapser.displayOverride {
 
 .displayNone {
   display: none;
+}
+
+/* --- Window buttons ----- */
+
+.nav > li.buttons {
+  cursor: default;
+  padding-right: 15px;
+  line-height: 40px;
+  height: 40px;
+  vertical-align: middle;
+  margin-left: 0; /*remove bootstrap rule*/
+}
+
+.nav > li.buttons > div {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: default;
+  text-align: center;
+}
+
+.buttons span {
+  line-height: 9px;
+  vertical-align: 50%;
+  text-align: center;
+  font-family: 'Arial Black';
+  font-size: 11px;
+}
+
+.nav > li.buttons:hover a {
+  visibility: visible;
+}
+
+.nav > li.buttons:hover a:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.xclose {
+  background: #ff5c5c;
+  font-size: 9pt;
+  line-height: 11px;
+  margin-left: 6px;
+  border: 1px solid #e33e41;
+}
+
+.xclose:active {
+  background: #c14645;
+  border: 1px solid #b03537;
+}
+
+.xclose:active .closebutton {
+  color: #4e0002;
+  text-decoration: none;
+}
+
+.closebutton {
+  color: #820005;
+  visibility: hidden;
+  cursor: default;
+}
+
+.minimize {
+  background: #ffbd4c;
+  font-size: 9pt;
+  line-height: 11px;
+  border: 1px solid #e09e3e;
+}
+
+.minimize:active {
+  background: #c08e38;
+  border: 1px solid #af7c33;
+}
+
+.minimize:active .minimizebutton {
+  color: #5a2607;
+  text-decoration: none;
+}
+
+.minimizebutton {
+  color: #9a5518;
+  visibility: hidden;
+  cursor: default;
+}
+
+.zoom {
+  background: #00ca56;
+  font-size: 9pt;
+  line-height: 11px;
+  margin-left: 6px;
+  border: 1px solid #14ae46;
+}
+
+.zoom:active {
+  background: #029740;
+  border: 1px solid #128435;
+}
+
+.zoom:active .zoombutton {
+  color: #003107;
+  text-decoration: none;
+}
+
+.zoombutton {
+  color: #006519;
+  visibility: hidden;
+  cursor: default;
 }

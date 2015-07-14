@@ -60,6 +60,7 @@ ffControllers.factory('$menu', function() {
 
 ffControllers.controller('ffMenu', ['$scope', '$menu', '$settings', '$location', function($scope, $menu, $settings, $location) {
   $scope.settingsData = $settings.data;
+  $scope.maximized = false;
 
   /**
    * Return true if path is current
@@ -69,9 +70,22 @@ ffControllers.controller('ffMenu', ['$scope', '$menu', '$settings', '$location',
     return $location.path() == path;
   };
 
-  $scope.appQuit = function() {
+  $scope.closeWindow = function() {
     gui.App.quit();
-  }
+  };
+
+  $scope.zoomWindow = function() {
+    win.maximize();
+  };
+
+  $scope.minimizeWindow = function() {
+    win.minimize();
+  };
+
+  $scope.isLoggedOut = function() {
+    return isEmpty($scope.settingsData.cookie);
+  };
+
 }]);
 
 /**

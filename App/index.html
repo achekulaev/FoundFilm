@@ -9,9 +9,9 @@
   </head>
   <body>
 
-  <!-- jQuery -->
+  <!-- jQuery FIRST -->
   <script src="lib/jquery/jquery-1.11.0.min.js"></script>
-  <!-- angular-material -->
+  <!-- angular -->
   <script src="bower_components/angular/angular.min.js"></script>
   <script src="bower_components/angular-animate/angular-animate.min.js"></script>
   <!--<script src="bower_components/angular-aria/angular-aria.min.js"></script>-->
@@ -22,7 +22,7 @@
   <script src="js/StringPrototype.js"></script> <!-- string helper -->
   <script src="js/node-init.js"></script>  <!-- initialize NODE Application and variables. Other files rely on this (!) -->
   <script src="js/foundfilm.js"></script>  <!-- contains object that works with lostfilm -->
-  <script src="js/window.js"></script>  <!-- window drag helper -->
+  <script src="js/window.js"></script>  <!-- window controls -->
 
   <!-- angular app files -->
   <script src="app/js/app.js"></script>
@@ -53,19 +53,33 @@
         <a onmousedown="showOverlay(this)" href="#/updates"
            ng-class="[isCurrent('/updates') ? 'active' : '']">Updates</a>
       </li>
-      <li ng-style="{display: settingsData.cookie == false ? '' : 'none'}" role="presentation">
+      <li role="presentation" ng-show="isLoggedOut()">
         <a onmousedown="showOverlay(this)" href="#/login"
            ng-class="[isCurrent('/login') ? 'active' : '']">Log In</a>
       </li>
-      <li>
-        <a href onclick="jQuery('.log').toggle(); return false;">Log</a>
-      </li>
       <!-- window buttons -->
-      <li style="float: right; line-height: 36px; padding-right: 15px;">
-        <button ng-click="appQuit()"
-          class="btn btn-danger btn-xs unselectable no-outline" style="border-radius: 15px">
-          <span class="glyphicon glyphicon-remove"></span>
-        </button>
+      <li class="buttons" style="float: right;">
+        <div class="minimize">
+          <a class="minimizebutton" href ng-click="minimizeWindow()"><span>‒</span></a>
+          <!-- minimize button link -->
+        </div>
+        <div class="zoom">
+          <a class="zoombutton" href ng-click="zoomWindow()"><span>+</span></a>
+          <!-- zoom button link -->
+        </div>
+        <div class="xclose">
+          <a class="closebutton" href ng-click="closeWindow()"><span>×</span></a>
+          <!-- close button link -->
+        </div>
+      </li>
+
+      <li role="presentation" style="float: right;">
+        <a href onclick="jQuery('.log').toggle(); return false;" class="btn-log btn-sm">Log
+          <button class="btn btn-xs btn-outline-inverse" type="button" style="border: 0">
+            <span class="caret"></span>
+          </button>
+        </a>
+
       </li>
     </ul>
     <!-- Log panel -->
