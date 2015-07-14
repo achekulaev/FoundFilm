@@ -68,6 +68,7 @@ ffControllers.controller('ffMenu', ['$scope', '$settings', '$location', function
   };
 
   $scope.closeWindow = function() {
+    win.hide();
     gui.App.quit();
   };
 
@@ -85,6 +86,7 @@ ffControllers.controller('ffMenu', ['$scope', '$settings', '$location', function
 
   ////////////////////////// ffMenu Runtime \\\\\\\\\\\\\\\\\\\\\\\\\
   $scope.$on('hideLoader', function() { $scope.hideLoader(); });
+  $scope.$on('quitApplication', function() { $scope.closeWindow(); });
 
 }]);
 
@@ -537,7 +539,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope) {
   $scope.resetSettings = function() {
     if (confirm('Reset will erase saved series and login data. Downloaded files will NOT be deleted. Continue?')) {
       $settings.reset();
-      gui.App.quit();
+      $rootScope.$broadcast('quitApplication');
     }
   };
 
