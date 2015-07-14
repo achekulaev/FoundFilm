@@ -49,18 +49,15 @@ ffControllers.factory('$agent', function() {
   return new Agent();
 });
 
-ffControllers.factory('$menu', function() {
-  return { 
-    hideLoading: function() {
-      jQuery('#loadingOverlay').hide();
-    }
-  };
-});
-
-
-ffControllers.controller('ffMenu', ['$scope', '$menu', '$settings', '$location', function($scope, $menu, $settings, $location) {
+ffControllers.controller('ffMenu', ['$scope', '$settings', '$location', function($scope, $settings, $location) {
   $scope.settingsData = $settings.data;
   $scope.maximized = false;
+  $scope.isLoading = true;
+  $scope.showLog = false;
+
+  $scope.hideLoader = function() {
+    $scope.isLoading = false;
+  };
 
   /**
    * Return true if path is current
@@ -86,13 +83,16 @@ ffControllers.controller('ffMenu', ['$scope', '$menu', '$settings', '$location',
     return isEmpty($scope.settingsData.cookie);
   };
 
+  ////////////////////////// ffMenu Runtime \\\\\\\\\\\\\\\\\\\\\\\\\
+  $scope.$on('hideLoader', function() { $scope.hideLoader(); });
+
 }]);
 
 /**
  * Series page Controller
  */
-ffControllers.controller('ffTracker', ['$scope', '$filter', '$settings', '$location', '$agent', '$menu',
-function ($scope, $filter, $settings, $location, $agent, $menu) {
+ffControllers.controller('ffTracker', ['$scope', '$filter', '$settings', '$location', '$agent', '$rootScope',
+function ($scope, $filter, $settings, $location, $agent, $rootScope) {
 
   $scope.series = $settings.data.series;
   $scope._series = {}; //for storing unchanged copy
@@ -164,7 +164,7 @@ function ($scope, $filter, $settings, $location, $agent, $menu) {
 //        $scope.series[key].title = movie.title;
 //      }
     });
-    $menu.hideLoading();
+    $rootScope.$broadcast('hideLoader');
     $scope.$apply();
     angular.copy($scope.series, $scope._series);
   });
@@ -174,8 +174,8 @@ function ($scope, $filter, $settings, $location, $agent, $menu) {
 /**
  * Updates controller (Main UI)
  */
-ffControllers.controller('ffUpdates', ['$scope', '$settings', '$agent', '$q', '$location', '$timeout', '$rootScope', '$menu',
-function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) {
+ffControllers.controller('ffUpdates', ['$scope', '$settings', '$agent', '$q', '$location', '$timeout', '$rootScope',
+function($scope, $settings, $agent, $q, $location, $timeout, $rootScope) {
 
   $scope.series = $settings.data.series;
   $scope.config = $settings.config;
@@ -270,7 +270,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
     if (!forced && $settings.config.lastUpdate && ((Date.now() - $settings.config.lastUpdate) < refreshDelayMsec)) {
       $timeout(function() {
         jQuery('[data-toggle="tooltip"]').tooltip();
-        $menu.hideLoading();
+        $rootScope.$broadcast('hideLoader');
       });
       return;
     }
@@ -288,7 +288,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
     });
 
     $timeout(function() { //$timeout ensures that code will run after angular finishes it's UI job
-      $menu.hideLoading();
+      $rootScope.$broadcast('hideLoader');
     });
 
     $q.all(promises).then(function() {
@@ -301,7 +301,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
       $scope.fetchingUpdates = false; // stop spinners
       $timeout(function() { //$timeout ensures that code will run after angular finishes it's UI job
         jQuery('[data-toggle="tooltip"]').tooltip();
-        $menu.hideLoading();
+        $rootScope.$broadcast('hideLoader');
       });
     });
   };
@@ -592,7 +592,6 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
       e.seen = true;
     });
     movie.seen = true;
-    movie.showSeen = true; // unhide seen episodes
     if (!$scope.$$phase) {
       $scope.$apply();
     }
@@ -667,8 +666,8 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
  * @param  {[type]} 1000       [description]
  * @return {[type]}            [description]
  */
-ffControllers.controller('ffLogin', ['$scope', '$settings', '$agent', '$q', '$location', '$interval', '$timeout',
-function($scope, $settings, $agent, $q, $location, $interval, $timeout) {
+ffControllers.controller('ffLogin', ['$scope', '$settings', '$agent', '$q', '$location', '$interval', '$timeout', '$rootScope',
+function($scope, $settings, $agent, $q, $location, $interval, $timeout, $rootScope) {
 
   $scope.interval = null;
 
@@ -704,7 +703,7 @@ function($scope, $settings, $agent, $q, $location, $interval, $timeout) {
   });
 
   $timeout(function() {
-    jQuery('#loadingOverlay').hide();
+    $rootScope.$broadcast('hideLoader');
   });
 
 }]);

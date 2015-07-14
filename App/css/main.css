@@ -109,7 +109,7 @@ body {
 }
 
 .episode {
-  line-height: 22px;
+  line-height: 23px;
 }
 
 .unseen {
@@ -300,7 +300,6 @@ label.collapser.displayOverride {
 /* --- Log panel ---- */
 
 .log {
-  display: none;
   position: fixed;
   top: 80px;
   left: 0;
@@ -308,7 +307,9 @@ label.collapser.displayOverride {
   width: 100vw;
   height: 500px;
   border-bottom: 1px solid black;
+  transition: all linear 0.5s;
 }
+
 .log textarea {
   border: 0;
   padding-left: 5px;
