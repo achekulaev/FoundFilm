@@ -15,14 +15,24 @@
   </li>
   <li class="navbar-right" style="margin-right: 15px">
     <div class="inline antialiased">Disk use: {{totalFileSize | fileSize}}</div>
-    <button class="btn btn-sm btn-outline-inverse" ng-click="!cleanupRunning ? fileCleanup() : void(0)">
-      <i ng-if="cleanupRunning" class="fa fa-refresh fa-spin"></i> Cleanup
-    </button>
+    <div class="btn-group">
+      <button class="btn btn-sm btn-outline-inverse" ng-click="!cleanupRunning ? fileCleanup() : void(0)">
+        <i ng-if="cleanupRunning" class="fa fa-refresh fa-spin"></i> Cleanup
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-inverse" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="caret"></span>
+        <span class="sr-only">Toggle Dropdown</span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="#" ng-click="resetSettings()">Reset settings</a></li>
+      </ul>
+    </div>
+
   </li>
 </ul>
 <div class="list-container padding-top-40">
   <div ng-repeat="(mIndex, movie) in series" class="panel panel-default movie"
-       ng-if="movie.status && (movie.showSeen || (!movie.seen || config.showSeen))">
+       ng-if="movie.status && (!movie.seen || config.showSeen)">
     <!-- PANEL HEADER -->
     <div class="panel-heading movie-header unselectable">
       <!-- Expand/collapse -->
@@ -31,7 +41,7 @@
              ng-class="[
               'glyphicon', movie.collapsed ? 'glyphicon-expand' : 'glyphicon-collapse-down',
               'collapser', 'unselectable', 'pointer',
-              config.showSeen && movie.updatingStatus != 1 && movie.unseenCount == 0 ? 'displayOverride' : '']"
+              movie.updatingStatus != 1 && movie.unseenCount == 0 ? 'displayOverride' : '']"
              data-toggle="tooltip" data-placement="bottom" title="Collapse/Expand">
       </label>
       <!-- Spinner -->
@@ -62,6 +72,14 @@
         <!--<span class="glyphicon glyphicon-check"></span>-->
         <!--<span>Mark as seen</span>-->
       <!--</button>-->
+      <div class="dropdown" style="display: inline-block">
+        <button class="btn btn-xs btn-default dropdown-toggle btn-outline-inverse" type="button" id="dropdown{{movie.id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown{{movie.id}}">
+          <li><a ng-disabled="movie.unseenCount < 1" ng-click="markMovieSeen(mIndex)" href>Mark all seen</a></li>
+        </ul>
+      </div>
     </div>
 
     <!-- PANEL BODY -->
@@ -70,10 +88,10 @@
         <!--- New Episodes --->
         <div ng-repeat="(eIndex, episode) in (movie.episodes | keyedOrderBy : 'id')"
                ng-class="['episode', episode.seen ? 'seen' : 'unseen']"
-               ng-if="(!episode.seen || movie.showSeen || config.showSeen)">
+               ng-if="(!episode.seen || config.showSeen)">
 
           <!-- Episode Title -->
-          <span class="clickable episodeTitle unselectable"
+          <span class="pointer episodeTitle unselectable"
                  ng-click="episode.seen = !episode.seen; updateSeenStatus(mIndex); $emit('settings')" >
             {{episode.season + '.' + episode.number}} {{episode.title}}
           </span>

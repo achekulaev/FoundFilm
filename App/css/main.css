@@ -178,14 +178,6 @@ body {
   color: #000;
 }
 
-.displayNone {
-  display: none;
-}
-
-.clickable {
-  cursor: pointer;
-}
-
 label.collapser {
   display: none;
   width: 22px;
@@ -217,7 +209,26 @@ label.collapser.displayOverride {
 
 .movie-header .btn {
   margin-top: -4px;
+  border: 0;
 }
+
+.movie-header .dropdown-menu {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.movie-header .dropdown .dropdown-menu {
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  transition:         all 0.2s  linear;
+}
+.movie-header .dropdown:hover .dropdown-menu {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* --- Buttons ---- */
 
 .panel-body .btn {
   margin-top: -2px;
@@ -238,6 +249,8 @@ label.collapser.displayOverride {
   text-shadow: 0 0 3px white;
 }
 
+/* --- Login controller ---- */
+
 .login-controller {
   height: 100vh;
   padding: 40px 0 0 0;
@@ -246,6 +259,14 @@ label.collapser.displayOverride {
 .login-controller iframe {
   border: 0;
 }
+
+/* --- Trackers controller ---- */
+
+.trackers-list {
+  pading-top: 40px;
+}
+
+/* --- Log panel ---- */
 
 .log {
   display: none;
@@ -294,3 +315,6 @@ label.collapser.displayOverride {
   outline-style: none;
 }
 
+.displayNone {
+  display: none;
+}

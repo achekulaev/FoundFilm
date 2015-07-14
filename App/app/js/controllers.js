@@ -122,14 +122,6 @@ function ($scope, $filter, $settings, $location, $agent, $menu) {
     $location.path("/updates");
   };
 
-  /**
-   * Fully resets saved settings
-   */
-  $scope.resetSettings = function() {
-    $settings.reset();
-    gui.App.quit();
-  };
-
   //----------------- Runtime ---------------------//
 
   //Prevent new windows creation. Redirect iframe instead
@@ -499,6 +491,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
 
   $scope.fileCleanup = function() {
     $scope.cleanupRunning = true;
+    // $timeouts to ensure UI get's updated not just stuck
     $timeout(function() {
       angular.forEach($settings.data.series, function (movie, mIndex) {
         if (movie.episodes) {
@@ -513,6 +506,16 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $menu) 
         $scope.cleanupRunning = false;
       });
     });
+  };
+
+  /**
+   * Fully resets saved settings
+   */
+  $scope.resetSettings = function() {
+    if (confirm('Reset will erase saved series and login data. Downloaded files will NOT be deleted. Continue?')) {
+      $settings.reset();
+      gui.App.quit();
+    }
   };
 
   $scope.updateFileSizes = function() {

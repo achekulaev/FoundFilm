@@ -50,7 +50,7 @@ var Agent = function() {
         callback(parser.parseEpisodes(body));
       } else {
         var result = [{ error : '' }];
-        if (error != 'undefined') {
+        if (error && error != 'undefined') {
           console.log(error);
           result[0].error += 'Error contacting lostfilm.tv: ' + error.message;
         }
@@ -239,6 +239,8 @@ var Parser = function() {
 
     //array of selectors
     var tokens = {
+      movieInfo:        'div.mid > div',
+      movieStatusRegex: 'Статус:\s?(.*)',
       episodeRow:       'div.t_row',
       // episode title
       episodeTitle:     '.t_episode_title > div > div > nobr',
@@ -247,6 +249,11 @@ var Parser = function() {
       //download regexp
       downloadRegex:  /ShowAllReleases\('(\d+)',\s?'(\d+)',\s?'([^']+)'.*/
     };
+
+    movieInfo = $(tokens.movieInfo).html(); //cheerio uses first match by default
+    movieInfo = this.plainString(movieInfo);
+    var statusMatch = movieInfo.match(tokens.movieStatusRegex);
+    //console.log(this.plainString(statusMatch[1]));
 
     var episodesDom = $(tokens.episodeRow);
     if (!episodesDom.length) {
