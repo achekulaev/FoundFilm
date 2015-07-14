@@ -58,8 +58,17 @@ ffControllers.factory('$menu', function() {
 });
 
 
-ffControllers.controller('ffMenu', ['$scope', '$menu', '$settings', function($scope, $menu, $settings) {
+ffControllers.controller('ffMenu', ['$scope', '$menu', '$settings', '$location', function($scope, $menu, $settings, $location) {
   $scope.settingsData = $settings.data;
+
+  /**
+   * Return true if path is current
+   * @param path
+   */
+  $scope.isCurrent = function(path) {
+    return $location.path() == path;
+  };
+
   $scope.appQuit = function() {
     gui.App.quit();
   }

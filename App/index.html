@@ -44,13 +44,23 @@
   </script>
 
   <div ng-controller="ffMenu" class="antialiased unselectable">
-    <ul class="nav nav-pills nav-main glossy unselectable" style="cursor:move;" id="window-toolbar">
-      <li role="presentation"><a onmousedown="showOverlay(this)" href="#/tracker">Series</a></li>
-      <li role="presentation"><a onmousedown="showOverlay(this)" href="#/updates">Updates</a></li>
-      <li ng-style="{display: settingsData.cookie == false ? '' : 'none'}" role="presentation">
-        <a onmousedown="showOverlay(this)" href="#/login">Log In</a>
+    <ul class="nav nav-pills nav-main glossy unselectable" id="window-toolbar">
+      <li role="presentation">
+        <a onmousedown="showOverlay(this)" href="#/tracker"
+          ng-class="[isCurrent('/tracker') ? 'active' : '']">Series</a>
       </li>
-      <li><a href="#" onclick="jQuery('.log').toggle(); return false;">Log</a></li>
+      <li role="presentation">
+        <a onmousedown="showOverlay(this)" href="#/updates"
+           ng-class="[isCurrent('/updates') ? 'active' : '']">Updates</a>
+      </li>
+      <li ng-style="{display: settingsData.cookie == false ? '' : 'none'}" role="presentation">
+        <a onmousedown="showOverlay(this)" href="#/login"
+           ng-class="[isCurrent('/login') ? 'active' : '']">Log In</a>
+      </li>
+      <li>
+        <a href onclick="jQuery('.log').toggle(); return false;">Log</a>
+      </li>
+      <!-- window buttons -->
       <li style="float: right; line-height: 36px; padding-right: 15px;">
         <button ng-click="appQuit()"
           class="btn btn-danger btn-xs unselectable no-outline" style="border-radius: 15px">
@@ -58,8 +68,9 @@
         </button>
       </li>
     </ul>
+    <!-- Log panel -->
     <div class="log"><textarea readonly="readonly" id="log"></textarea></div>
-
+    <!-- Loading overlay -->
     <div id="loadingOverlay">Loading...</div>
   </div>
 

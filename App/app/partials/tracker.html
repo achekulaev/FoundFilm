@@ -1,9 +1,9 @@
-<ul class="nav nav-pills nav2 nav3" ng-show="changed">
-  <li role="presentation"><a href="#/updates" ng-click="saveSettings();">Save</a></li>
-  <li role="presentation"><a href="#/tracker" ng-click="cancelChanges()">Cancel</a></li>
+<ul class="nav nav-pills nav2 nav3">
+  <li role="presentation" class="antialiased"><a ng-class="[changed ? '' : 'disabled inactive']" href ng-click="changed ? saveSettings() : void(0);">Save</a></li>
+  <li role="presentation" class="antialiased"><a ng-class="[changed ? '' : 'disabled inactive']" href ng-click="cancelChanges()">Undo</a></li>
 </ul>
 
-<div ng-class="['list-container', changed ? 'trackers-list' : '']"
+<div class="trackers-list"
      ng-style="{ paddingBottom: previewActive ? '40%' : '15px' }">
   <!--<button class="btn btn-primary" ng-click="saveSettings()">Save</button>-->
   <!--<button ng-click="resetSettings()">Reset</button>-->
