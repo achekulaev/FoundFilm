@@ -1,20 +1,21 @@
 {
   "name": "FoundFilm",
   "main": "index.html",
-  "description": "Favorite series tracker",
-  "version": "0.9.5",
+  "description": "LostFilm tracker",
+  "version": "0.9.6",
   "window": {
-    "title": "LostFilm Helper",
+    "title": "LostFilm tracker",
     "icon": "link.png",
     "toolbar": false,
     "frame": false,
     "width": 1024,
     "height": 768,
     "position": "mouse",
-    "min_width": 400,
-    "min_height": 200,
+    "min_width": 800,
+    "min_height": 600,
     "max_width": 1600,
     "max_height": 1200,
+    "single-instance": true,
     "show": false
   }
 }
