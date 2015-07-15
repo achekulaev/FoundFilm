@@ -1,4 +1,5 @@
 var ffControllers = angular.module('ffControllers', []);
+var refreshDelay = (60 * 60) * 1000; //1 hour
 
 /**
  * Settings service
@@ -88,6 +89,9 @@ ffControllers.factory('$agent', function() {
   return new Agent();
 });
 
+/**
+ * Main menu controller
+ */
 ffControllers.controller('ffMenu', ['$scope', '$settings', '$location', function($scope, $settings, $location) {
   $scope.settingsData = $settings.data;
   $scope.maximized = false;
@@ -136,6 +140,7 @@ ffControllers.controller('ffTracker', ['$scope', '$filter', '$settings', '$locat
 function ($scope, $filter, $settings, $location, $agent, $rootScope) {
 
   $scope.series = angular.copy($settings.data.series);
+  $scope.newCount = 0;
   $scope.changed = false;
   $scope.previewActive = false;
   $scope.previewId = -1;
@@ -167,11 +172,34 @@ function ($scope, $filter, $settings, $location, $agent, $rootScope) {
     if (!$scope.$$phase) $scope.$apply();
   };
 
+  $scope.countNew = function() {
+    angular.forEach($scope.series, function(movie) {
+      if (movie.isNew) {
+        $scope.newCount++;
+      }
+    });
+  };
+
+  $scope.markSeen = function(movie) {
+    movie.isNew=false;
+    $scope.newCount--;
+    $scope.setChanged();
+  };
+
+  $scope.markAllSeen = function() {
+    angular.forEach($scope.series, function(movie) {
+      movie.isNew = false;
+    });
+    $scope.newCount = 0;
+    $scope.setChanged();
+  };
+
   /**
    * Revert changes to trackers
    */
   $scope.cancelChanges = function() {
     $scope.series = angular.copy($settings.data.series);
+    $scope.countNew();
     $scope.changed = false;
     if (!$scope.$$phase) $scope.$apply();
   };
@@ -200,22 +228,30 @@ function ($scope, $filter, $settings, $location, $agent, $rootScope) {
     jQuery('#previewFrame').attr('src', url);
   });
 
-  //load series names from server and tracking statuses from local settings
-  $agent.getSeries(function(series) {
-    angular.forEach(series, function(movie, key) {
-      if (!$scope.series[key]) {
-        movie.isNew = true;
-        $scope.series[key] = movie;
-      }
-      else {
-        if ($scope.series[key].title != movie.title) {
-          $scope.series[key].title = movie.title;
+  //load series names from server when needed
+  if (!isEmpty($settings.config.lastUpdate) && ((Date.now() - $settings.config.lastUpdate) < refreshDelay)) {
+    $agent.getSeries(function(series) {
+      angular.forEach(series, function(movie, key) {
+        if (!$scope.series[key]) { // new series
+          movie.isNew = true;
+          $scope.series[key] = movie;
+          $scope.newCount++;
         }
-      }
+        else {
+          if ($scope.series[key].title != movie.title) {
+            $scope.series[key].title = movie.title;
+          }
+        }
+      });
+      $rootScope.$broadcast('hideLoader');
+      if (!$scope.$$phase) $scope.$apply();
     });
+  } else {
+    $scope.countNew();
     $rootScope.$broadcast('hideLoader');
-    $scope.$apply();
-  });
+    if (!$scope.$$phase) $scope.$apply();
+  }
+
 
 }]);
 
@@ -314,8 +350,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope) {
    * Gets updates for all tracked movies if checked > than 1hour ago
    */
   $scope.getUpdates = function(forced) {
-    var refreshDelayMsec = (60 * 60) * 1000; //1 hour
-    if (!forced && $settings.config.lastUpdate && ((Date.now() - $settings.config.lastUpdate) < refreshDelayMsec)) {
+    if (!forced && $settings.config.lastUpdate && ((Date.now() - $settings.config.lastUpdate) < refreshDelay)) {
       $timeout(function() {
         jQuery('[data-toggle="tooltip"]').tooltip();
         $rootScope.$broadcast('hideLoader');

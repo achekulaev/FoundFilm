@@ -1,6 +1,17 @@
 <ul class="nav nav-pills nav2 nav3">
   <li role="presentation" class="antialiased"><a ng-class="[changed ? '' : 'disabled inactive']" href ng-click="changed ? saveSettings() : void(0);">Save</a></li>
   <li role="presentation" class="antialiased"><a ng-class="[changed ? '' : 'disabled inactive']" href ng-click="cancelChanges()">Undo</a></li>
+  <li role="presentation" class="antialiased" ng-show="newCount>0">
+    <div class="dropdown" style="display: inline-block; padding-top: 2px">
+      <button class="btn btn-default dropdown-toggle btn-outline-inverse" type="button" id="dropdown-new-series" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        New <span class="label label-danger" ng-bind="newCount"></span>
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown{{movie.id}}">
+        <li><a ng-click="markAllSeen()" href>Mark all seen</a></li>
+      </ul>
+    </div>
+  </li>
 </ul>
 
 <div class="trackers-list"
@@ -16,6 +27,7 @@
            />
   <div ng-repeat="movie in series | keyedOrderBy : 'title' : true">
     <input type="checkbox" ng-model="movie.status" id="track{{movie.id}}" ng-click="setChanged()" />
+    <span class="label label-danger pointer" ng-if="movie.isNew" ng-click="markSeen(movie)">New</span>
     <label for="track{{movie.id}}" ng-bind="movie.title" class="pointer unselectable"></label>
     <button ng-click="preview(movie.id)"
             ng-class="['btn', 'btn-xs', (previewActive && previewId == movie.id) ? 'btn-danger' : 'btn-default']">
