@@ -22,3 +22,5 @@ ffApp.config(['$routeProvider',
         redirectTo: '/updates'
       });
 }]);
+
+var ffControllers = angular.module('ffControllers', []);
