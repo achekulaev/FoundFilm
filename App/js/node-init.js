@@ -22,7 +22,8 @@ win.focus();
 
 //-- Prevent Exception that would make app unusable
 process.on("uncaughtException", function(err) {
-  console.log("Exception: ", err);
+  ffLog("[!] Exception -- " + err.stack + "\n--------------------\n");
+
 });
 
 //-- Prevent loading external page that would make app unusable
@@ -39,6 +40,9 @@ process.on('exit', function() {
   });
 });
 
+/**
+ * package.json starts window invisible for smoother load. here we show it
+ */
 $(window).on('load', function() {
   win.show();
   win.focus();

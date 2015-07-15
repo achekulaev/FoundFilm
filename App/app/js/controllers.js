@@ -5,6 +5,45 @@ var ffControllers = angular.module('ffControllers', []);
  * @return {{}}
  */
 ffControllers.factory('$settings', [ function() {
+  /**
+   * Settings Object structure:
+   * {
+   *   config: { lastUpdate: timestamp, showSeen: bool },
+   *   data: {
+   *     cookie: { {cookie}, {...} }, // browser cookies of current logged in user
+   *     series: {
+   *       id123: {
+   *         collapsed: bool // collapsed/expanded in list
+   *         episodes: {
+   *           id_555: {
+   *             ariaRunning: int (1|0)
+   *             gettingTorrentFile: int (1|0)
+   *             gotMovie: int (1|0)
+   *             gotTorrentFile: int (1|0)
+   *             id: int
+   *             link: string // ex: "http://lostfilm.tv/nrdr.php?c=235&s=1&e=01"
+   *             number: string // ex: "05", parsed number of episode in season
+   *             season: string // ex: "1", parsed season number
+   *             seen: bool
+   *             title: string
+   *           },
+   *           id_556: {...}
+   *         }
+   *         id: int,
+   *         isNew: bool,
+   *         seen: bool,
+   *         status: bool, // tracked or not
+   *         title: string,
+   *         unseenCount: int,
+   *         updatingDescription: string,
+   *         updatingStatus: int(0|1)
+   *       },
+   *       id124: {...}
+   *     }
+   *   }
+   * }
+   */
+
   var $instance = angular.fromJson(window.localStorage.foundFilm);
   if (!$instance) {
     $instance = { data : {}, config: {} };
@@ -96,8 +135,7 @@ ffControllers.controller('ffMenu', ['$scope', '$settings', '$location', function
 ffControllers.controller('ffTracker', ['$scope', '$filter', '$settings', '$location', '$agent', '$rootScope',
 function ($scope, $filter, $settings, $location, $agent, $rootScope) {
 
-  $scope.series = $settings.data.series;
-  $scope._series = {}; //for storing unchanged copy
+  $scope.series = angular.copy($settings.data.series);
   $scope.changed = false;
   $scope.previewActive = false;
   $scope.previewId = -1;
@@ -133,12 +171,19 @@ function ($scope, $filter, $settings, $location, $agent, $rootScope) {
    * Revert changes to trackers
    */
   $scope.cancelChanges = function() {
-    angular.copy($scope._series, $settings.data.series);
+    $scope.series = angular.copy($settings.data.series);
     $scope.changed = false;
     if (!$scope.$$phase) $scope.$apply();
   };
 
   $scope.saveSettings = function() {
+    angular.forEach($scope.series, function(movie, key) {
+      if (movie.status && movie.status != $settings.data.series[key].status) {
+        $settings.data.series[key].status = movie.status;
+        $settings.config.lastUpdate = 0; // force update
+      }
+    });
+
     if ($scope.series) {
       $settings.data.series = $scope.series;
       $settings.save();
@@ -162,13 +207,14 @@ function ($scope, $filter, $settings, $location, $agent, $rootScope) {
         movie.isNew = true;
         $scope.series[key] = movie;
       }
-//      else {
-//        $scope.series[key].title = movie.title;
-//      }
+      else {
+        if ($scope.series[key].title != movie.title) {
+          $scope.series[key].title = movie.title;
+        }
+      }
     });
     $rootScope.$broadcast('hideLoader');
     $scope.$apply();
-    angular.copy($scope.series, $scope._series);
   });
 
 }]);
@@ -265,7 +311,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope) {
   };
 
   /**
-   * Gets updates for all movies
+   * Gets updates for all tracked movies if checked > than 1hour ago
    */
   $scope.getUpdates = function(forced) {
     var refreshDelayMsec = (60 * 60) * 1000; //1 hour
@@ -321,7 +367,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope) {
     episode.downloadingDescription = 'Downloading torrent file...';
 
     if (!$settings.data.cookie) {
-      alert('You need to Log in first. You will be redirected.')
+      alert('You need to Log in first. You will be redirected.');
       $location.path('/login');
       return;
     }

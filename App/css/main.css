@@ -303,7 +303,7 @@ label.collapser.displayOverride {
   position: fixed;
   top: 80px;
   left: 0;
-  z-index: 10;
+  z-index: 10001;
   width: 100vw;
   height: 500px;
   border-bottom: 1px solid black;
