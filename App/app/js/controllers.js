@@ -645,7 +645,6 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
   //--------------------- Runtime --------------------------//
 
   if (!Object.keys($scope.series).length) {
-    console.log('No series to track!');
     $location.path('/tracker'); // redirect to tracker for user to select series
   } else {
     $timeout(function() {

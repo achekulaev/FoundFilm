@@ -351,6 +351,32 @@ label.collapser.displayOverride {
   display: none;
 }
 
+/* -- Spinner -- */
+
+.glyphicon.spinning {
+  -webkit-animation: spin2 1.5s infinite linear;
+}
+
+@keyframes spin {
+  from { transform: scale(1) rotate(0deg);}
+  to { transform: scale(1) rotate(360deg);}
+}
+
+@-webkit-keyframes spin2 {
+  from { -webkit-transform: rotate(0deg);}
+  to { -webkit-transform: rotate(360deg);}
+}
+
+.movie-header .spinning {
+  font-size: 22px;
+  vertical-align: middle;
+  -webkit-font-smoothing: subpixel-antialiased; /* looks better */
+}
+
+.movie-header:hover .spinning {
+  display: none;
+}
+
 /* --- Window buttons ----- */
 
 .nav > li.buttons {
