@@ -32,6 +32,7 @@ ffControllers.factory('$settings', [ function() {
    *         }
    *         id: int,
    *         isNew: bool,
+   *         isFinished: bool, // when series finished never update again
    *         seen: bool,
    *         status: bool, // tracked or not
    *         title: string,
@@ -208,6 +209,7 @@ function ($scope, $filter, $settings, $location, $agent, $rootScope) {
     angular.forEach($scope.series, function(movie, key) {
       if (movie.status && movie.status != $settings.data.series[key].status) {
         $settings.data.series[key].status = movie.status;
+        $settings.data.series[key].isFinished = false; // re-adding series will force isFinished check
         $settings.config.lastUpdate = 0; // force update
       }
     });
@@ -220,7 +222,7 @@ function ($scope, $filter, $settings, $location, $agent, $rootScope) {
     $location.path("/updates");
   };
 
-  //----------------- Runtime ---------------------//
+  ////////////////////////   ffTracker Runtime   \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
   //Prevent new windows creation. Redirect iframe instead
   win.on('new-win-policy', function(frame, url, policy) {
@@ -302,15 +304,19 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope) {
     }
 
     movie.updatingDescription = 'Getting episodes list...';
-    $agent.getEpisodes(movie.id, function(episodes) {
+    $agent.getEpisodes(movie.id, function(episodes, isFinished) {
       if (episodes[0] && episodes[0].error) {
         ffLog('Failed to get new movies for ' + movie.id + ': ' + episodes[0].error.code);
         deferred.resolve();
         return;
       }
-      //done updating this movie
+
       if (!movie.episodes) {
-        movie.episodes = {};
+        movie.episodes = {}; // init object
+      }
+
+      if (isFinished) {
+        movie.isFinished = true;
       }
 
       movie.updatingDescription = 'Verifying existing files...';
@@ -363,6 +369,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope) {
     $scope.fetchingUpdates = true;
 
     angular.forEach($scope.series, function(movie, key) {
+      if (movie.isFinished) return;
       movie.updatingStatus = 1;
       movie.updatingDescription = 'Loading...';
       if (movie.status) {

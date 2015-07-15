@@ -58,20 +58,12 @@
           {{movie.title}}
         </label>
       </h3>
-      <!--&lt;!&ndash; Show/Hide unseen &ndash;&gt;-->
-      <!--<input type="checkbox" ng-model="movie.showSeen" ng-click="$emit('settings')" class="displayNone" id="showSeen{{movie.id}}" />-->
-      <!--<label for="showSeen{{movie.id}}" class="btn btn-sm btn-default glossy"-->
-             <!--ng-show="!config.showSeen">-->
-        <!--<span ng-class="['glyphicon', movie.showSeen ? 'glyphicon-eye-close' : 'glyphicon-eye-open']"></span>-->
-        <!--<span>{{movie.showSeen ? 'Hide seen' : 'Show seen'}}</span>-->
-      <!--</label>-->
-      <!--&lt;!&ndash; Mark all as seen &ndash;&gt;-->
-      <!--<button class="btn btn-sm btn-default glossy"-->
-             <!--data-toggle="tooltip" data-placement="bottom" title="Marks all episodes as seen"-->
-             <!--ng-show="movie.unseenCount > 0" ng-click="markMovieSeen(mIndex)">-->
-        <!--<span class="glyphicon glyphicon-check"></span>-->
-        <!--<span>Mark as seen</span>-->
-      <!--</button>-->
+      <!-- isFinished mark -->
+      <span ng-if="movie.isFinished" class="label label-warning" style="cursor: help"
+            data-toggle="tooltip" data-placement="bottom" title="Finished seasons don't update">
+        Finished
+      </span>
+      <!-- Movie title dropdown -->
       <div class="dropdown" style="display: inline-block">
         <button class="btn btn-xs btn-default dropdown-toggle btn-outline-inverse" type="button" id="dropdown{{movie.id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
           <span class="caret"></span>

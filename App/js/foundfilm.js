@@ -47,7 +47,8 @@ var Agent = function() {
     request(options, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var parser = new Parser();
-        callback(parser.parseEpisodes(body));
+        var data = parser.parseEpisodes(body);
+        callback(data.episodes, data.isFinished);
       } else {
         var result = [{ error : '' }];
         if (error && error != 'undefined') {
@@ -241,6 +242,7 @@ var Parser = function() {
     var tokens = {
       movieInfo:        'div.mid > div',
       movieStatusRegex: 'Статус:\s?(.*)',
+      movieFinished:    'закончен',
       episodeRow:       'div.t_row',
       // episode title
       episodeTitle:     '.t_episode_title > div > div > nobr',
@@ -253,7 +255,7 @@ var Parser = function() {
     movieInfo = $(tokens.movieInfo).html(); //cheerio uses first match by default
     movieInfo = this.plainString(movieInfo);
     var statusMatch = movieInfo.match(tokens.movieStatusRegex);
-    //console.log(this.plainString(statusMatch[1]));
+    var isFinished = (this.plainString(statusMatch[1]) == tokens.movieFinished);
 
     var episodesDom = $(tokens.episodeRow);
     if (!episodesDom.length) {
@@ -292,7 +294,7 @@ var Parser = function() {
       episodes['id_' + episode.id] = episode;
     });
 
-    return episodes;
+    return { episodes: episodes, isFinished: isFinished };
   };
 
   /**
