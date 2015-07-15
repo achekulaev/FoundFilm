@@ -141,7 +141,7 @@ function ($scope, $filter, $settings, $location, $agent, $rootScope) {
   });
 
   //load series names from server when needed
-  if (!isEmpty($settings.config.lastUpdate) && ((Date.now() - $settings.config.lastUpdate) < refreshDelay)) {
+  if (isEmpty($settings.config.lastUpdate) || ((Date.now() - $settings.config.lastUpdate) < refreshDelay)) {
     $agent.getSeries(function(series) {
       angular.forEach(series, function(movie, key) {
         if (!$scope.series[key]) { // new series
@@ -266,7 +266,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
    * Gets updates for all tracked movies if checked > than 1hour ago
    */
   $scope.getUpdates = function(forced) {
-    if (!forced && $settings.config.lastUpdate && ((Date.now() - $settings.config.lastUpdate) < refreshDelay)) {
+    if (!forced || (!isEmpty($settings.config.lastUpdate) && ((Date.now() - $settings.config.lastUpdate) < refreshDelay))) {
       $timeout(function() {
         jQuery('[data-toggle="tooltip"]').tooltip();
         $rootScope.$broadcast('hideLoader');
