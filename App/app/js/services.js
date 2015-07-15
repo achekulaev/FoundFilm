@@ -8,7 +8,7 @@
  *       id123: {
  *         collapsed: bool // collapsed/expanded in list
  *         episodes: {
- *           id_555: {
+ *           id_101: {
  *             ariaRunning: int (1|0)
  *             gettingTorrentFile: int (1|0)
  *             gotMovie: int (1|0)
@@ -20,7 +20,7 @@
  *             seen: bool
  *             title: string
  *           },
- *           id_556: {...}
+ *           id_102: {...}
  *         }
  *         id: int,
  *         isNew: bool,
@@ -81,5 +81,28 @@ ffControllers.factory('$settings', [ function() {
  */
 ffControllers.factory('$agent', function() {
   return new Agent();
+});
+
+/**
+ * Desktop notifications service
+ * @return {{}}
+ */
+ffControllers.factory('$notification', function() {
+  var $instance = {};
+
+  $instance.show = function(title, message, delay) {
+    var options = {
+      //icon: "http://yourimage.jpg",
+      body: message
+    };
+
+    var notification = new Notification(title, options);
+
+    notification.onshow = function () {
+      setTimeout(function() { notification.close(); }, delay ? delay : 5000);
+    }
+  };
+
+  return $instance;
 });
 

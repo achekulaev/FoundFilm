@@ -170,8 +170,8 @@ function ($scope, $filter, $settings, $location, $agent, $rootScope) {
 /**
  * Updates controller (Main UI)
  */
-ffControllers.controller('ffUpdates', ['$scope', '$settings', '$agent', '$q', '$location', '$timeout', '$rootScope',
-function($scope, $settings, $agent, $q, $location, $timeout, $rootScope) {
+ffControllers.controller('ffUpdates', ['$scope', '$settings', '$agent', '$q', '$location', '$timeout', '$rootScope', '$notification',
+function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notification) {
 
   $scope.series = $settings.data.series;
   $scope.config = $settings.config;
@@ -451,6 +451,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope) {
       if (code == 0) {
         episode.gotMovie = 1;
         episode.ariaResumable = 0;
+        $notification.show('Download finished', '({0}.{1}) {2}'.format(episode.season, episode.number, episode.title));
       } else {
         ffLog('ERROR during torrent download of ' + episode.title);
       }
