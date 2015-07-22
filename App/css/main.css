@@ -339,6 +339,10 @@ label.collapser.displayOverride {
   cursor: pointer;
 }
 
+.cprogress {
+  cursor: progress;
+}
+
 .unselectable, button, .btn {
   -webkit-user-select: none;
 }
