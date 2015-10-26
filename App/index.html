@@ -46,9 +46,9 @@
         <a ng-mousedown="isLoading=true" href="#/updates"
            ng-class="[isCurrent('/updates') ? 'active' : '']">Updates</a>
       </li>
-      <li role="presentation" ng-show="isLoggedOut()">
+      <li role="presentation">
         <a ng-mousedown="isLoading=true" href="#/login"
-           ng-class="[isCurrent('/login') ? 'active' : '']">Log In</a>
+           ng-class="[isCurrent('/login') ? 'active' : '']">{{isLoggedOut() ? 'Login' : 'Re-Login'}}</a>
       </li>
       <!-- window buttons -->
       <li class="buttons" style="float: right;">

@@ -55,5 +55,5 @@ $(window).on('load', function() {
  * @returns {boolean|*}
  */
 function isEmpty(value){
-  return (typeof value === 'undefined' || value == null || value.length === 0 || jQuery.isEmptyObject(value));
+  return (typeof value === 'undefined' || value == null || value === 0 || value.length === 0 || jQuery.isEmptyObject(value));
 }

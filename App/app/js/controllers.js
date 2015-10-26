@@ -47,8 +47,8 @@ ffControllers.controller('ffMenu', ['$scope', '$settings', '$location', function
 /**
  * Series page Controller
  */
-ffControllers.controller('ffTracker', ['$scope', '$filter', '$settings', '$location', '$agent', '$rootScope',
-function ($scope, $filter, $settings, $location, $agent, $rootScope) {
+ffControllers.controller('ffTracker', ['$scope', '$filter', '$settings', '$location', '$lfAgent', '$rootScope',
+function ($scope, $filter, $settings, $location, $lfAgent, $rootScope) {
 
   $scope.series = angular.copy($settings.data.series);
   $scope.newCount = 0;
@@ -116,16 +116,17 @@ function ($scope, $filter, $settings, $location, $agent, $rootScope) {
   };
 
   $scope.saveSettings = function() {
-    angular.forEach($scope.series, function(movie, key) {
-      if (movie.status && movie.status != $settings.data.series[key].status) {
-        $settings.data.series[key].status = movie.status;
-        $settings.data.series[key].isFinished = false; // re-adding series will force isFinished check
-        $settings.config.lastUpdate = 0; // force update
-      }
-    });
-
     if ($scope.series) {
       $settings.data.series = $scope.series;
+
+      angular.forEach($scope.series, function(movie, key) {
+        if (movie.status && $settings.data.series[key] && movie.status != $settings.data.series[key].status) {
+          $settings.data.series[key].status = movie.status;
+          $settings.data.series[key].isFinished = false; // re-adding series will force isFinished check
+          $settings.config.lastUpdate = 0; // force update
+        }
+      });
+
       $settings.save();
     }
     $scope.changed = false;
@@ -141,8 +142,8 @@ function ($scope, $filter, $settings, $location, $agent, $rootScope) {
   });
 
   //load series names from server when needed
-  if (isEmpty($settings.config.lastUpdate) || ((Date.now() - $settings.config.lastUpdate) < refreshDelay)) {
-    $agent.getSeries(function(series) {
+  if (Object.keys($scope.series).length == 0 || isEmpty($settings.config.lastUpdate) || ((Date.now() - $settings.config.lastUpdate) > refreshDelay)) {
+    $lfAgent.getSeries(function(series) {
       angular.forEach(series, function(movie, key) {
         if (!$scope.series[key]) { // new series
           movie.isNew = true;
@@ -170,8 +171,8 @@ function ($scope, $filter, $settings, $location, $agent, $rootScope) {
 /**
  * Updates controller (Main UI)
  */
-ffControllers.controller('ffUpdates', ['$scope', '$settings', '$agent', '$q', '$location', '$timeout', '$rootScope', '$notification',
-function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notification) {
+ffControllers.controller('ffUpdates', ['$scope', '$settings', '$lfAgent', '$q', '$location', '$timeout', '$rootScope', '$notification',
+function($scope, $settings, $lfAgent, $q, $location, $timeout, $rootScope, $notification) {
 
   $scope.series = $settings.data.series;
   $scope.config = $settings.config;
@@ -179,6 +180,12 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
   $scope.totalFileSize = 0;
   $scope.fetchingUpdates = false;
   $scope.cleanupRunning = false;
+
+  //Prevent new windows creation. Redirect iframe instead
+  win.on('new-win-policy', function(frame, url, policy) {
+    policy.ignore();
+    jQuery('#lf').attr('src', url);
+  });
 
   /**
    * Checks if file exists and readable. Returns 1 or 0
@@ -214,9 +221,11 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
     }
 
     movie.updatingDescription = 'Getting episodes list...';
-    $agent.getEpisodes(movie.id, function(episodes, isFinished) {
+    $lfAgent.getEpisodes(movie.id, function(episodes, isFinished) {
       if (episodes[0] && episodes[0].error) {
-        ffLog('Failed to get new movies for ' + movie.id + ': ' + episodes[0].error.code);
+        ffLog('Failed to get new movies for ' + movie.id + ': ' + episodes[0].error);
+        movie.updatingDescription = 'Done';
+        movie.updatingStatus = 0;
         deferred.resolve();
         return;
       }
@@ -230,7 +239,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
       }
 
       movie.updatingDescription = 'Verifying existing files...';
-      var mPath = $agent.getUserHome() + movie.id + '/';
+      var mPath = $lfAgent.getUserHome() + movie.id + '/';
       //Check torrentStatus at startup
       angular.forEach(episodes, function(episode, key) {
         if (!movie.episodes[key]) { // this episode is new
@@ -243,7 +252,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
           //check movie file exists
           if (e.gotMovie) {
             e.gotMovie = $scope.fileOK(mPath + episode.id + '.avi');
-          } 
+          }
           //if no movie exists check if torrent file exists
           // else if (e.gotTorrentFile) {
           //   e.gotTorrentFile = $scope.fileOK(mPath + episode.id + '.torrent');
@@ -329,27 +338,25 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
       return;
     }
 
-    $agent.getTorrent(episode.link, $settings.data.cookie, function(torrentLinks, err) {
+    $lfAgent.getTorrent(episode.link, function(torrentLinks, err) {
       if (err && err.msg) {
         alert(err.msg);
+        episode.gettingTorrentFile = 0;
         return;
       }
 
       if (!torrentLinks.length) {
-        alert('You need to Log in. You will be redirected.')
-        $settings.data.cookie = false;
-        $location.path('/login');
+        alert('Could not get links. Something went wrong. Most likely you have to re-login');
+        episode.gettingTorrentFile = 0;
         return;
       }
 
-      $agent.getTorrentFile(torrentLinks[0].href, movie.id, episode.id, function(result) {
-        if (result === false) {
-          alert('Download has failed. You may need to re-login.');
-          episode.downloadingDescription = 'Error downloading torrent file!';
-        }
-        else {
+      $lfAgent.getTorrentFile(torrentLinks[0].href, movie.id, episode.id, function(code){
+        if (code == 0) {
           episode.gotTorrentFile = 1;
           $scope.getMovie(movieIndex, episodeIndex);
+        } else {
+          alert('Torrent file download has failed. See log for details');
         }
         episode.gettingTorrentFile = 0;
         $scope.$apply();
@@ -365,7 +372,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
   $scope.openTorrent = function(movieIndex, episodeIndex) {
     var movie = $scope.series[movieIndex],
         episode = movie.episodes[episodeIndex],
-        file = $agent.getUserHome() + movie.id + '/' + episode.id + '.torrent';
+        file = $lfAgent.getUserHome() + movie.id + '/' + episode.id + '.torrent';
     try {
       var fd = fs.openSync(file, 'r');
       if (fd) {
@@ -397,7 +404,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
 
     // http://aria2.sourceforge.net/manual/en/html/aria2c.html
     var spawn = require('child_process').spawn,
-        home = $agent.getUserHome();
+        home = $lfAgent.getUserHome();
 
     // childProcesses var is defined in node-init.js
     childProcesses[movieIndex + episodeIndex] = spawn(process.cwd() + '/bin/aria2c', [
@@ -472,7 +479,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
   $scope.playMovie = function(movieIndex, episodeIndex) {
     var movie = $scope.series[movieIndex],
       episode = movie.episodes[episodeIndex],
-      file = $agent.getUserHome() + movie.id + '/' + episode.id + '.avi';
+      file = $lfAgent.getUserHome() + movie.id + '/' + episode.id + '.avi';
     try {
       var fd = fs.openSync(file, 'r');
       if (fd) {
@@ -494,7 +501,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
   $scope.fileDelete = function(mIndex, eIndex) {
     var movie = $scope.series[mIndex],
       episode = movie.episodes[eIndex], 
-      path = $agent.getUserHome() + movie.id + '/' + episode.id + '.avi';
+      path = $lfAgent.getUserHome() + movie.id + '/' + episode.id + '.avi';
 
     fs.unlink(path, function(err) {
       if (err) {
@@ -543,7 +550,7 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
   };
 
   $scope.updateFileSizes = function() {
-    var home = $agent.getUserHome(), total = 0;
+    var home = $lfAgent.getUserHome(), total = 0;
 
     angular.forEach($settings.data.series, function(movie) {
       if (movie.episodes) {
@@ -659,15 +666,14 @@ function($scope, $settings, $agent, $q, $location, $timeout, $rootScope, $notifi
  * Login page controller
  * @param  {[type]} $scope     [description]
  * @param  {[type]} $settings  [description]
- * @param  {[type]} $agent     [description]
  * @param  {[type]} $q         [description]
  * @param  {[type]} $location  [description]
  * @param  {[type]} $interval) {             $scope.interval [description]
  * @param  {[type]} 1000       [description]
  * @return {[type]}            [description]
  */
-ffControllers.controller('ffLogin', ['$scope', '$settings', '$agent', '$q', '$location', '$interval', '$timeout', '$rootScope',
-function($scope, $settings, $agent, $q, $location, $interval, $timeout, $rootScope) {
+ffControllers.controller('ffLogin', ['$scope', '$settings', '$q', '$location', '$interval', '$timeout', '$rootScope',
+function($scope, $settings, $q, $location, $interval, $timeout, $rootScope) {
 
   $scope.interval = null;
 
