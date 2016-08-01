@@ -382,6 +382,11 @@ function($scope, $settings, $lfAgent, $q, $location, $timeout, $rootScope, $noti
     } catch(e) {}
   };
 
+  $scope.openFolder = function(movieIndex) {
+    var movie = $scope.series[movieIndex];
+    open($lfAgent.getUserHome() + movie.id);
+  };
+
   /**
    * Downloads actual movie using aria2c torrent client
    * @param movieIndex
@@ -464,7 +469,8 @@ function($scope, $settings, $lfAgent, $q, $location, $timeout, $rootScope, $noti
       }
       delete childProcesses[movieIndex + episodeIndex];
       $settings.data.series[movieIndex].episodes[episodeIndex].fileSize = fs.statSync(home + movie.id + '/' + episode.id + '.avi').size;
-      $scope.totalFileSize = $scope.updateFileSizes();
+      $scope.updateFileSizes()
+        .then((total) => { $scope.totalFileSize = total });
       $rootScope.$broadcast('scopeApply');
       $rootScope.$broadcast('settings');
       ffLog('Aria for ' + movieIndex + ':' + episodeIndex +' exited with code ' + code);
@@ -551,20 +557,26 @@ function($scope, $settings, $lfAgent, $q, $location, $timeout, $rootScope, $noti
 
   $scope.updateFileSizes = function() {
     var home = $lfAgent.getUserHome(), total = 0;
-
-    angular.forEach($settings.data.series, function(movie) {
-      if (movie.episodes) {
+    return new Promise(function(resolve, reject) {
+      var fstats = [];
+      angular.forEach($settings.data.series, function(movie) {
+        if (! movie.episodes) return;
         angular.forEach(movie.episodes, function(episode) {
-          if (episode.gotMovie) {
-            var size = fs.statSync(home + movie.id + '/' + episode.id + '.avi').size;
-            total += size;
-            episode.fileSize = size;
-          }
-        })
-      }
+          if (! episode.gotMovie) return;
+          var fstat = fs.statAsync(home + movie.id + '/' + episode.id + '.avi').
+            then(function(stats) {
+              console.log(stats.size);
+              total += stats.size;
+              episode.fileSize = size;
+            }).
+            catch(function(error) {
+              //console.warn(error.message)
+            });
+          fstats.push(fstat);
+        });
+      });
+      Promise.all(fstats).finally(function() { resolve(total) });
     });
-
-    return total;
   };
 
   /**
@@ -627,10 +639,11 @@ function($scope, $settings, $lfAgent, $q, $location, $timeout, $rootScope, $noti
   });
 
   $scope.$on('filesUpdate', function(e) {
-    $scope.totalFileSize = $scope.updateFileSizes();
-    $timeout(function() {
-      $scope.$apply();
-    });
+    $scope.updateFileSizes()
+      .then((total) => {
+        $scope.totalFileSize = total;
+        $timeout(function() { $scope.$apply(); });
+      });
   });
 
   $scope.$on('scopeApply', function(e) {
@@ -656,7 +669,8 @@ function($scope, $settings, $lfAgent, $q, $location, $timeout, $rootScope, $noti
   } else {
     $timeout(function() {
       $scope.getUpdates();
-      $scope.totalFileSize = $scope.updateFileSizes();
+      $scope.updateFileSizes()
+        .then((total) => { $scope.totalFileSize = total; });
     });
   }
 
