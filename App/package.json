@@ -6,11 +6,10 @@
   "window": {
     "title": "LostFilm tracker",
     "icon": "link.png",
-    "toolbar": true,
-    "frame": true,
+    "frame": false,
     "width": 1024,
     "height": 768,
-    "position": "mouse",
+    "position": "center",
     "min_width": 800,
     "min_height": 600,
     "max_width": 1600,
