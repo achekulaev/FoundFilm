@@ -6,8 +6,8 @@
   "window": {
     "title": "LostFilm tracker",
     "icon": "link.png",
-    "toolbar": false,
-    "frame": false,
+    "toolbar": true,
+    "frame": true,
     "width": 1024,
     "height": 768,
     "position": "mouse",
@@ -17,5 +17,8 @@
     "max_height": 1200,
     "single-instance": true,
     "show": false
+  },
+  "dependencies": {
+    "bluebird": "^3.4.1"
   }
 }
