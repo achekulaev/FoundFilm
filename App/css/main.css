@@ -1,3 +1,11 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+html { overflow: hidden }
+
 body {
   padding-top: 40px;
   background: #f5f5f5;
