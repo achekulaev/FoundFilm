@@ -9,9 +9,11 @@ app_copyright="Fuck Trump"
 app_category="public.app-category.entertainment"
 app_category2=""
 
-app_folder="../App"			# where nwjs app code lives
-app_resources_folder="."    # where to take Info.plist, icons, en.lproj
 app_build_folder="../Build" # where resulting app will be put
+app_code_folder="../App" # where is nwjs app code
+app_resources_folder="." # where to take Info.plist, icon
+app_plist="$app_resources_folder/Info.plist"
+app_icon="$app_resources_folder/app.icns"
 
 #---------------------------
 
@@ -23,43 +25,29 @@ green='\033[0;32m'
 yellow='\033[1;33m'
 NC='\033[0m'
 
-echo-red () { echo -e "${red}$1${NC}"; }
-echo-green () { echo -e "${green}$1${NC}"; }
-echo-yellow () { echo -e "${yellow}$1${NC}"; }
-
-if_failed ()
-{
-	if [ ! $? -eq 0 ]; then
-		if [[ "$1" == "" ]]; then msg="dsh: error"; else msg="$1"; fi
-		echo-red "dsh: $msg";
-		exit 1;
-	fi
-}
-
 #-------- Build  ---------
 
 resulting_app_file="$app_build_folder/$app_name.app"
 resulting_app_contents="./$resulting_app_file/Contents"
 resulting_app_resources="$resulting_app_contents/Resources"
 
-echo -e "Building ${green}$app_name${NC} into ${green}${resulting_app_file}${NC}..."
+echo -e "Building ${green}$app_name${NC} into ${green}${resulting_app_file}${NC}"
 
-echo "Cleanup"
+# Remove old build
 rm -r "$resulting_app_file" 2>/dev/null
 
-echo "Copying nwjs.app"
+echo "Copying nwjs.app ($nwjs)"
 if [ ! -d $nwjs ]; then
 	echo-red "$nwjs was not found"
 	exit 1
 fi
 cp -R "$nwjs" "$resulting_app_file"
 
-echo "Bundling $app_name"
-cp -R "$app_folder" "$resulting_app_resources/app.nw"
-# sed -i "" "s/Drude Watch-dev/Drude Watch/" "$resulting_app_resources/app.nw/package.json"
+echo "Bundling app code ($app_code_folder)"
+cp -R "$app_code_folder" "$resulting_app_resources/app.nw"
 
-echo "Bundling Info.plist"
-cat "$app_resources_folder/Info.plist" | \
+echo "Bundling Info.plist ($app_plist)"
+cat "$app_plist" | \
 	sed "s/__name__/$app_name/" | \
 	sed "s/__bundle_identifier__/$app_identifier/" | \
 	sed "s/__version__/$app_version/" | \
@@ -69,21 +57,24 @@ cat "$app_resources_folder/Info.plist" | \
 	sed "s/__app_sec_category__/$app_category2/" | \
 	tee "$resulting_app_contents/Info.plist" >/dev/null
 
-# remove localization or Finder will show nwjs instead of file name
-# http://stackoverflow.com/a/37902023/1359178
-echo "Removing en.lproj"
-rm -r "$resulting_app_resources/en.lproj"
-
-#echo-green "Bundling nw.icns"
-cp "$app_resources_folder/app.icns" "$resulting_app_resources/app.icns"
+echo "Bundling app icon $app_icon"
+sleep 1
+cp "$app_icon" "$resulting_app_resources/app.icns"
+# remove external attributes that may contain quarantine
+# http://stackoverflow.com/a/4833168/1359178
 xattr -c "$resulting_app_resources/app.icns"
 
+# Remove localization or Finder will show nwjs instead of file name
+# http://stackoverflow.com/a/37902023/1359178
+[[ -d "$resulting_app_resources/en.lproj" ]] && \
+	rm -r "$resulting_app_resources/en.lproj"
+
 echo "Clearing icons cache"
+sleep 1
 touch "$resulting_app_file"
 touch "$resulting_app_contents/Info.plist"
 
-echo-green "DONE"
+echo -e "${green}DONE${NC}"
 echo "--------------"
-echo "Press enter to try running resulting app or Ctrl+C to finish build."
-read -p ''
-open "$resulting_app_file"
+read -p 'Run resulting app? [y/n]: ' answer
+[[ "$answer" == "y" ]] && open "$resulting_app_file"
